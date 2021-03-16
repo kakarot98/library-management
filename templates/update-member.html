@@ -1,0 +1,10 @@
+<div class="container">
+    <h2>Update Member</h2>
+    <form action="/members/{{member.member_id}}/update" method="post">
+        <label for="memberName">Name: </label>
+        <input type="text" name="memberName" value="{{member.member_name}}">
+        <br>
+        <input type="submit" name="" id="" value="Update member">
+        <a href="/members"><button>Cancel</button></a>
+    </form>
+</div>

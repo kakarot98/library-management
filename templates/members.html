@@ -1,0 +1,41 @@
+<form action="" method="post">
+    <label for="memberName">Member Name: </label>
+    <input type="text" name="memberName">
+    <br>
+    <input type="submit">
+</form>
+<br>
+<br>
+<br>
+
+{% if memberDetails|length < 1%}
+<h2>No Members yet</h2>
+{% else %}
+<table border=1>
+    <thead>
+        <th>Name</th>
+        <th>Outstanding Debt</th>
+        <th>Total paid</th>
+        <th>No. of books in possession</th>
+        <th colspan="2">Actions</th>
+    </thead> 
+    {% for member in memberDetails %}
+    <tr>               
+        <td>{{member.member_name}}</td>
+        <td>{{member.outstanding_debt}}</td>
+        <td>{{member.total_paid}}</td>
+        <td>{{member.books_in_possession}}</td>
+        <td>
+            <a href="/members/{{member.member_id}}/update">Update</a>
+        </td>
+        <td>
+            <a href="/members/{{member.member_id}}/delete">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+<br>
+<br>
+<br>
+<a href="/"><button>Homepage</button></a>

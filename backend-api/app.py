@@ -1,14 +1,19 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
+#to convert non serializable sql data to json easily without writing custom serializer
 import yaml
+import time
 
 app = Flask(__name__)
+
 
 #Mysql config
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/library'
 
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
 
 #Object model for books
 class Books(db.Model):
@@ -20,6 +25,15 @@ class Books(db.Model):
     stocks_left = db.Column(db.Integer, default=1)
     issued = db.Column(db.Integer, default=0)
 
+    def __repr__(self):
+        return "<Book %r>", self.book_id
+
+
+#making schema to convert to json later
+class BooksSchema(ma.SQLAlchemyAutoSchema):#noqa
+    class Meta:
+        model = Books
+
 
 #Object Model for Members
 class Members(db.Model):
@@ -28,6 +42,11 @@ class Members(db.Model):
     outstanding_debt = db.Column(db.Integer, nullable=False, default=0)
     total_paid = db.Column(db.Integer, nullable=False, default=0)
     books_in_possession = db.Column(db.Integer, nullable=False, default=0)
+
+
+class MembersScehema(ma.SQLAlchemyAutoSchema):#noqa
+    class Meta:
+        model = Members
 
 
 #object model for all transactions
@@ -76,8 +95,14 @@ def index():
 @app.route('/books', methods=['GET', 'POST'])
 def books():
     if request.method=='GET':
+
         bookDetails = Books.query.all()
-        return render_template('books.html', bookDetails=bookDetails)
+
+        bookSchema = BooksSchema(many=True)
+        output = bookSchema.dump(bookDetails)
+        return jsonify({'bookDetails': output})
+
+        # return render_template('books.html', bookDetails=bookDetails)
     
     if request.method=='POST':
         bookName=request.form['bookName']
@@ -109,7 +134,10 @@ def update_book(id):
     book = Books.query.get_or_404(id)
 
     if request.method=='GET':
-        return render_template('update-book.html', book=book)
+        bookSchema = BooksSchema()
+        output = bookSchema.dump(book)
+        return jsonify({'book': output})
+        #return render_template('update-book.html', book=book)
     
     if request.method=='POST':
         book.book_name = request.form['bookName']
@@ -140,8 +168,13 @@ def showBookTransactions(id):
 @app.route('/members', methods=['GET', 'POST'])
 def members():
     if request.method=='GET':
+
         memberDetails = Members.query.all()
-        return render_template('members.html', memberDetails=memberDetails)
+        membersSchema = MembersScehema(many=True)
+        output = membersSchema.dump(memberDetails)
+        return jsonify({'memberDetails': output})
+
+        #return render_template('members.html', memberDetails=memberDetails)
     
     if request.method=='POST':
         memberName=request.form['memberName']        

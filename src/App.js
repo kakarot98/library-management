@@ -1,17 +1,38 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import HomePage from "./components/HomePage";
+import Navbar from "./components/Navbar";
+import BooksList from "./components/BooksList";
+import MembersList from "./components/MembersList";
+import TransactionsList from "./components/TransactionsList";
 
 function App() {
   const [ra, setRa] = useState(0);
 
-  useEffect(() => {
-    fetch("/books")
-      .then((res) => res.json())
-      .then((data) => console.log(data));
-  }, []);
-
-  return <div className="App"></div>;
+  return (
+    <Router>
+      <div className="App">
+        <Navbar />
+        <div className="content">
+          <Switch>
+            <Route exact path="/">
+              <HomePage />
+            </Route>
+            <Route exact path="/books">
+              <BooksList />
+            </Route>
+            <Route exact path="/members">
+              <MembersList />
+            </Route>
+            <Route exact path="/transactions">
+              <TransactionsList />
+            </Route>
+          </Switch>
+        </div>
+      </div>
+    </Router>
+  );
 }
 
 export default App;

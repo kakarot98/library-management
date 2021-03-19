@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./components/HomePage";
@@ -8,7 +8,6 @@ import MembersList from "./components/MembersList";
 import TransactionsList from "./components/TransactionsList";
 
 function App() {
-  const [ra, setRa] = useState(0);
 
   return (
     <Router>

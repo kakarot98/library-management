@@ -20,7 +20,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <AppBar position="static" color="transparent">
+      <AppBar position="static" color="secondary">
         <Toolbar>
           <Typography variant="h5" className={classes.title}>
             <Link to="/">Library Management</Link>

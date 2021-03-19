@@ -118,15 +118,16 @@ def books():
             return 'Database error'
 
 #deleting book
-@app.route('/books/<int:id>/delete')
+@app.route('/books/<int:id>/delete', methods=['DELETE'])
 def delete_book(id):
-    try:
-        book = Books.query.get_or_404(id)
-        db.session.delete(book)
-        db.session.commit()
-        return redirect('/books')
-    except:
-        return 'Cannot delete this entry'
+    if request.method=='DELETE':
+        try:
+            Books.query.filter_by(book_id=id).delete()
+            # db.session.delete(book)
+            db.session.commit()
+            return jsonify({'status': 'OK'})
+        except:
+            return jsonify({'staus':'NOT OK'})
 
 #updating the book details
 @app.route('/books/<int:id>/update', methods=['GET','POST'])

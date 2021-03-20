@@ -97,23 +97,28 @@ def books():
     if request.method=='GET':
 
         bookDetails = Books.query.all()
-
         bookSchema = BooksSchema(many=True)
         output = bookSchema.dump(bookDetails)
         return jsonify({'bookDetails': output})
-
-        # return render_template('books.html', bookDetails=bookDetails)
     
     if request.method=='POST':
-        bookName=request.form['bookName']
-        authorName=request.form['authorName']
-        rentPrice = request.form.get('rentPrice', type=int)
-        stocks = request.form.get('stocks', type=int)
-        newBook = Books(book_name=bookName, author_name=authorName, rent_price=rentPrice, stocks_left=stocks)
+        bookDetailsFromUI = request.get_json()
+
+        # print(bookDetailsFromUI)
+        # return jsonify({'obj': bookDetailsFromUI})  
+
+        bookName=bookDetailsFromUI['bookName']        
+        authorName=bookDetailsFromUI['authorName']
+        rentPrice = int(bookDetailsFromUI['rentPrice'])
+        stocks = int(bookDetailsFromUI['stocks'])
+        newBook = Books(book_name=bookName, author_name=authorName, rent_price=rentPrice, stocks_left=stocks)        
         try:
             db.session.add(newBook)
             db.session.commit()
-            return redirect('/books')
+            bookDetails = Books.query.all()
+            bookSchema = BooksSchema(many=True)
+            output = bookSchema.dump(bookDetails)
+            return jsonify({'bookDetails': output})
         except:
             return 'Database error'
 
@@ -123,9 +128,11 @@ def delete_book(id):
     if request.method=='DELETE':
         try:
             Books.query.filter_by(book_id=id).delete()
-            # db.session.delete(book)
             db.session.commit()
-            return jsonify({'status': 'OK'})
+            bookDetails = Books.query.all()
+            bookSchema = BooksSchema(many=True)
+            output = bookSchema.dump(bookDetails)
+            return jsonify({'bookDetails': output})
         except:
             return jsonify({'staus':'NOT OK'})
 
@@ -138,16 +145,20 @@ def update_book(id):
         bookSchema = BooksSchema()
         output = bookSchema.dump(book)
         return jsonify({'book': output})
-        #return render_template('update-book.html', book=book)
+        
     
     if request.method=='POST':
-        book.book_name = request.form['bookName']
-        book.author_name = request.form['authorName']
-        book.rent_price = request.form['rentPrice']
-        book.stocks_left = request.form['stocks']
+        requestedBook = request.get_json()
+        book.book_name = requestedBook['bookName']
+        book.author_name = requestedBook['authorName']
+        book.rent_price = int(requestedBook['rentPrice'])
+        book.stocks_left = int(requestedBook['stocks'])
         try:
             db.session.commit()
-            return redirect('/books')
+            bookDetails = Books.query.all()
+            bookSchema = BooksSchema(many=True)
+            output = bookSchema.dump(bookDetails)
+            return jsonify({'bookDetails': output})
         except:
             return 'Database error'
 

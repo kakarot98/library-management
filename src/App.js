@@ -3,7 +3,7 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./components/HomePage";
 import Navbar from "./components/Navbar";
-import BooksList from "./components/BooksList";
+import Books from "./components/books/Books";
 import MembersList from "./components/MembersList";
 import TransactionsList from "./components/TransactionsList";
 
@@ -19,7 +19,7 @@ function App() {
               <HomePage />
             </Route>
             <Route exact path="/books">
-              <BooksList />
+              <Books />
             </Route>
             <Route exact path="/members">
               <MembersList />

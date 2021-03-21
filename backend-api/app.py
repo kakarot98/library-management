@@ -98,29 +98,29 @@ def books():
 
         bookDetails = Books.query.all()
         bookSchema = BooksSchema(many=True)
-        output = bookSchema.dump(bookDetails)
-        return jsonify({'bookDetails': output})
+        bookDetails = bookSchema.dump(bookDetails)
+        return jsonify({'bookDetails': bookDetails})
     
     if request.method=='POST':
-        bookDetailsFromUI = request.get_json()
+        frontEndData = request.get_json()
 
         # print(bookDetailsFromUI)
         # return jsonify({'obj': bookDetailsFromUI})  
 
-        bookName=bookDetailsFromUI['bookName']        
-        authorName=bookDetailsFromUI['authorName']
-        rentPrice = int(bookDetailsFromUI['rentPrice'])
-        stocks = int(bookDetailsFromUI['stocks'])
+        bookName=frontEndData['bookName']        
+        authorName=frontEndData['authorName']
+        rentPrice = int(frontEndData['rentPrice'])
+        stocks = int(frontEndData['stocks'])
         newBook = Books(book_name=bookName, author_name=authorName, rent_price=rentPrice, stocks_left=stocks)        
         try:
             db.session.add(newBook)
             db.session.commit()
             bookDetails = Books.query.all()
             bookSchema = BooksSchema(many=True)
-            output = bookSchema.dump(bookDetails)
-            return jsonify({'bookDetails': output})
+            bookDetails = bookSchema.dump(bookDetails)
+            return jsonify({'bookDetails': bookDetails})
         except:
-            return jsonify({'staus':'NOT OK'})
+            return jsonify({'error':'Error in book details or database'})
 
 #deleting book
 @app.route('/books/<int:id>/delete', methods=['DELETE'])
@@ -131,10 +131,10 @@ def delete_book(id):
             db.session.commit()
             bookDetails = Books.query.all()
             bookSchema = BooksSchema(many=True)
-            output = bookSchema.dump(bookDetails)
-            return jsonify({'bookDetails': output})
+            bookDetails = bookSchema.dump(bookDetails)
+            return jsonify({'bookDetails': bookDetails})
         except:
-            return jsonify({'staus':'NOT OK'})
+            return jsonify({'error':'Error in deleting the book'})
 
 #updating the book details
 @app.route('/books/<int:id>/update', methods=['GET','POST'])
@@ -148,19 +148,19 @@ def update_book(id):
         
     
     if request.method=='POST':
-        requestedBook = request.get_json()
-        book.book_name = requestedBook['bookName']
-        book.author_name = requestedBook['authorName']
-        book.rent_price = int(requestedBook['rentPrice'])
-        book.stocks_left = int(requestedBook['stocks'])
+        bookDataFrontEnd = request.get_json()
+        book.book_name = bookDataFrontEnd['bookName']
+        book.author_name = bookDataFrontEnd['authorName']
+        book.rent_price = int(bookDataFrontEnd['rentPrice'])
+        book.stocks_left = int(bookDataFrontEnd['stocks'])
         try:
             db.session.commit()
             bookDetails = Books.query.all()
             bookSchema = BooksSchema(many=True)
-            output = bookSchema.dump(bookDetails)
-            return jsonify({'bookDetails': output})
+            bookDetails = bookSchema.dump(bookDetails)
+            return jsonify({'bookDetails': bookDetails})
         except:
-            return jsonify({'staus':'NOT OK'})
+            return jsonify({'error':'Error in updating the book'})
 
 
 #Check transactions of the particular book
@@ -183,13 +183,13 @@ def members():
 
         memberDetails = Members.query.all()
         membersSchema = MembersScehema(many=True)
-        output = membersSchema.dump(memberDetails)
-        return jsonify({'memberDetails': output})
+        memberDetails = membersSchema.dump(memberDetails)
+        return jsonify({'memberDetails': memberDetails})
     
     if request.method=='POST':
         try:
-            newMemberDetails = request.get_json()
-            newMemberName = newMemberDetails['memberName']
+            newMemberFrontEnd = request.get_json()
+            newMemberName = newMemberFrontEnd['memberName']
             if not newMemberName:
                 return jsonify({'error': 'Name not entered properly'})
         
@@ -202,8 +202,8 @@ def members():
             db.session.commit()
             memberDetails = Members.query.all()
             membersSchema = MembersScehema(many=True)
-            output = membersSchema.dump(memberDetails)
-            return jsonify({'memberDetails': output})
+            memberDetails = membersSchema.dump(memberDetails)
+            return jsonify({'memberDetails': memberDetails})
         except:
             return jsonify({'error': 'Database error'})
 
@@ -211,18 +211,25 @@ def members():
 #update members
 @app.route('/members/<int:id>/update', methods=['GET','POST'])
 def update_members(id):
+    
     member = Members.query.get_or_404(id)
 
     if request.method=='GET':
         return render_template('update-member.html', member=member)
     
     if request.method=='POST':
-        member.member_name = request.form['memberName']
+        memberDataFrontEnd = request.get_json()
+        if not memberDataFrontEnd:
+            return jsonify({'error':'Name not entered properly'})
+        member.member_name = memberDataFrontEnd['memberName']
         try:
             db.session.commit()
-            return redirect('/members')
+            memberDetails = Members.query.all()
+            membersSchema = MembersScehema(many=True)
+            memberDetails = membersSchema.dump(memberDetails)
+            return jsonify({'memberDetails': memberDetails})
         except:
-            return 'Database error'
+            return jsonify({'error':'Error in updating'})
 
 
 #deleting members
@@ -241,18 +248,10 @@ def delete_member(id):
 
                 memberDetails = Members.query.all()
                 memberSchema = MembersScehema(many=True)
-                output = memberSchema.dump(memberDetails)
-
-                return jsonify({'memberDetails': output})
-            
-            # Members.query.filter_by(id).delete()
-            # db.session.commit()
-            # memberDetails = Members.query.all()
-            # memberSchema = MembersScehema(many=True)
-            # output = memberSchema.dump(memberDetails)
-            return jsonify({'memberDetails': 'OK'})
+                memberDetails = memberSchema.dump(memberDetails)
+                return jsonify({'memberDetails': memberDetails})
         except:
-            return jsonify({'status':'NOT OK'})
+            return jsonify({'error':'Database error, member not deleted'})
 
 
 

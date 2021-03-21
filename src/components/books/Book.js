@@ -30,6 +30,10 @@ const Book = ({ book, deleteBook, updateBook }) => {
 
   const closeUpdateBookDialog = () => {
     setUpdateBookDialog(false);
+    setTempBook(bookName)
+    setTempAuth(authorName)
+    setTempRent(rentPrice)
+    setTempStocks(stocks)
   };
 
   return (
@@ -54,7 +58,7 @@ const Book = ({ book, deleteBook, updateBook }) => {
           onClose={() => closeUpdateBookDialog()}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle>Add New Book</DialogTitle>
+          <DialogTitle>Update Book</DialogTitle>
           <DialogContent>
             <TextField
               value={tempBook}

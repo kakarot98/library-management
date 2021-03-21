@@ -31,16 +31,16 @@ const MembersList = ({ fetchMembersList, membersList }) => {
   };
 
   //update member function
-//   const updateMember = async (id, mname) => {
-//     await axios
-//       .post(`/members/${id}/update`, {
-//         memberName: mname
-//       })
-//       .then((res) => {
-//         console.log(res.data);
-//         fetchMembersList();
-//       });
-//   };
+  const updateMember = async (id, mname) => {
+    await axios
+      .post(`/members/${id}/update`, {
+        memberName: mname
+      })
+      .then((res) => {
+        console.log(res.data);
+        fetchMembersList();
+      });
+  };
 
 
   return list.length ? (
@@ -63,6 +63,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
               <Member
               member={member}
               deleteMember={deleteMember}
+              updateMember={updateMember}
               key={member.member_id}         
               />
             ))}

@@ -8,7 +8,6 @@ const Books = () => {
 
   //function will be used to fetch bookdetails and then store it again freshly
   const fetchBookList = async () => {
-    
     await axios.get("/books").then((res) => {
       setBooksList([]);
       setBooksList(res.data.bookDetails);

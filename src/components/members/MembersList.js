@@ -9,7 +9,7 @@ import {
   Paper,
 } from "@material-ui/core";
 import axios from "axios";
-import Member from './Member'
+import Member from "./Member";
 
 const MembersList = ({ fetchMembersList, membersList }) => {
   const [list, setList] = useState([]);
@@ -18,7 +18,6 @@ const MembersList = ({ fetchMembersList, membersList }) => {
     setList(membersList);
     console.log(membersList);
   }, []);
-
 
   //function to delete the member
   const deleteMember = async (id) => {
@@ -34,14 +33,13 @@ const MembersList = ({ fetchMembersList, membersList }) => {
   const updateMember = async (id, mname) => {
     await axios
       .post(`/members/${id}/update`, {
-        memberName: mname
+        memberName: mname,
       })
       .then((res) => {
         console.log(res.data);
         fetchMembersList();
       });
   };
-
 
   return list.length ? (
     <div>
@@ -61,10 +59,10 @@ const MembersList = ({ fetchMembersList, membersList }) => {
           <TableBody>
             {list.map((member) => (
               <Member
-              member={member}
-              deleteMember={deleteMember}
-              updateMember={updateMember}
-              key={member.member_id}         
+                member={member}
+                deleteMember={deleteMember}
+                updateMember={updateMember}
+                key={member.member_id}
               />
             ))}
           </TableBody>

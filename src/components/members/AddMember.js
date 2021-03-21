@@ -16,7 +16,6 @@ const AddMember = ({ fetchMembersList }) => {
 
   const [memberName, setMemberName] = useState("");
 
-  
   const openAddMemberDialog = () => {
     setAddMemberDialog(true);
   };

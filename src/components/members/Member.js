@@ -44,7 +44,11 @@ const Member = ({ member, deleteMember, updateMember }) => {
       <TableCell align="right">{totalPaid}</TableCell>
       <TableCell align="right">{booksInPossesion}</TableCell>
       <TableCell align="right">
-        <Button variant="contained" color="primary" onClick={()=>openUpdateMemberDialog()}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => openUpdateMemberDialog()}
+        >
           Update
         </Button>
         <Dialog

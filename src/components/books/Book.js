@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   TableCell,
   TableRow,
-  
   Button,
   Dialog,
   DialogActions,
@@ -30,10 +29,10 @@ const Book = ({ book, deleteBook, updateBook }) => {
 
   const closeUpdateBookDialog = () => {
     setUpdateBookDialog(false);
-    setTempBook(bookName)
-    setTempAuth(authorName)
-    setTempRent(rentPrice)
-    setTempStocks(stocks)
+    setTempBook(bookName);
+    setTempAuth(authorName);
+    setTempRent(rentPrice);
+    setTempStocks(stocks);
   };
 
   return (

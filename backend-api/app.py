@@ -120,7 +120,7 @@ def books():
             output = bookSchema.dump(bookDetails)
             return jsonify({'bookDetails': output})
         except:
-            return 'Database error'
+            return jsonify({'staus':'NOT OK'})
 
 #deleting book
 @app.route('/books/<int:id>/delete', methods=['DELETE'])
@@ -160,7 +160,7 @@ def update_book(id):
             output = bookSchema.dump(bookDetails)
             return jsonify({'bookDetails': output})
         except:
-            return 'Database error'
+            return jsonify({'staus':'NOT OK'})
 
 
 #Check transactions of the particular book
@@ -217,17 +217,33 @@ def update_members(id):
 
 
 #deleting members
-@app.route('/members/<int:id>/delete')
+@app.route('/members/<int:id>/delete', methods=['DELETE'])
 def delete_member(id):
-    member = Members.query.get_or_404(id)
 
-    #should not be able to delete if there are any dues to be paid
-    if member.outstanding_debt>0:
-        return 'Cannot delete due to outstanding deb'
-    
-    db.session.delete(member)
-    db.session.commit()
-    return redirect('/members')
+    if request.method=='DELETE':
+        try:
+            member = Members.query.get_or_404(id)
+            #should not be able to delete if there are any dues to be paid
+            if member.outstanding_debt>0:
+                return jsonify({'status':'outstanding debt remains'})
+            else:
+                db.session.delete(member)
+                db.session.commit()
+
+                memberDetails = Members.query.all()
+                memberSchema = MembersScehema(many=True)
+                output = memberSchema.dump(memberDetails)
+
+                return jsonify({'memberDetails': output})
+            
+            # Members.query.filter_by(id).delete()
+            # db.session.commit()
+            # memberDetails = Members.query.all()
+            # memberSchema = MembersScehema(many=True)
+            # output = memberSchema.dump(memberDetails)
+            return jsonify({'memberDetails': 'OK'})
+        except:
+            return jsonify({'status':'NOT OK'})
 
 
 

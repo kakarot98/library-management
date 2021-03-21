@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./components/HomePage";
 import Navbar from "./components/Navbar";
 import Books from "./components/books/Books";
-import MembersList from "./components/MembersList";
+import Members from "./components/members/Members";
 import TransactionsList from "./components/TransactionsList";
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
               <Books />
             </Route>
             <Route exact path="/members">
-              <MembersList />
+              <Members />
             </Route>
             <Route exact path="/transactions">
               <TransactionsList />

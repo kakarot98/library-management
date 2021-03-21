@@ -8,8 +8,9 @@ const Members = () => {
 
   //function to fetch member details and then store them afresh in the list to render properly
   const fetchMembersList = async () => {
-    setMembersList([]);
+    
     await axios.get("/members").then((res) => {
+      setMembersList([]);
       setMembersList(res.data.memberDetails);
       console.log(res.data.memberDetails);
       console.log("fetching members from parent component");
@@ -26,7 +27,7 @@ const Members = () => {
         fetchMembersList={fetchMembersList}
         membersList={membersList}
       />
-      {/* <AddMember fetchMembersList={fetchMembersList} /> */}
+      <AddMember fetchMembersList={fetchMembersList} />
     </div>
   ) : (
     <h1>Loading ...</h1>

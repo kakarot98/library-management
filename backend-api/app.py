@@ -185,18 +185,27 @@ def members():
         membersSchema = MembersScehema(many=True)
         output = membersSchema.dump(memberDetails)
         return jsonify({'memberDetails': output})
-
-        #return render_template('members.html', memberDetails=memberDetails)
     
     if request.method=='POST':
-        memberName=request.form['memberName']        
-        newMember = Members(member_name=memberName)
         try:
+            newMemberDetails = request.get_json()
+            newMemberName = newMemberDetails['memberName']
+            if not newMemberName:
+                return jsonify({'error': 'Name not entered properly'})
+        
+            newMember = Members(member_name=newMemberName)
+
+            # memberName=request.form['memberName']        
+            # newMember = Members(member_name=memberName)
+
             db.session.add(newMember)
             db.session.commit()
-            return redirect('/members')
+            memberDetails = Members.query.all()
+            membersSchema = MembersScehema(many=True)
+            output = membersSchema.dump(memberDetails)
+            return jsonify({'memberDetails': output})
         except:
-            return 'Database error'
+            return jsonify({'error': 'Database error'})
 
 
 #update members

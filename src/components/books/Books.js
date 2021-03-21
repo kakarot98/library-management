@@ -8,8 +8,9 @@ const Books = () => {
 
   //function will be used to fetch bookdetails and then store it again freshly
   const fetchBookList = async () => {
-    setBooksList([]);
+    
     await axios.get("/books").then((res) => {
+      setBooksList([]);
       setBooksList(res.data.bookDetails);
       console.log(res.data.bookDetails);
       console.log("fetching books from parent component");

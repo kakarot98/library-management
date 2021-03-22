@@ -344,30 +344,55 @@ def issueBook():
         return render_template('issue-book.html',books=books, members=members, transactions=transactions)
     
     if request.method=='POST':
-        book_id = request.form['book']
-        member_id = request.form['member']
-        transaction_type = "issue"
-        #should not issue the book either if its out of stock or if the outstanding debt is above 500
-        if getAvailability(book_id) and not checkOutstandingDebtLimitCrossed(member_id):
-            member = Members.query.get_or_404(member_id)
-            book = Books.query.get_or_404(book_id)
-            book.stocks_left = book.stocks_left - 1
-            book.issued = book.issued + 1
-            member.outstanding_debt = member.outstanding_debt + book.rent_price
-            member.books_in_possession = member.books_in_possession + 1
-            newTransaction = Transactions(book_id=book_id, member_id=member_id, transaction_type=transaction_type)
-            try:
-                db.session.add(newTransaction)
-                db.session.commit()
-                return redirect('/transactions')
-            except:
-                return 'Database error'
-            
-        elif not getAvailability(book_id):
-            return 'The requested book is out of stock'
+        try:
+            details = request.get_json()
+            book_id = int(details['book'])
+            member_id = int(details['member'])
+            transaction_type = "issue"
+            # return jsonify({'message':'receiving data', 'details': details})
+            if getAvailability(book_id) and not checkOutstandingDebtLimitCrossed(member_id):
+                member = Members.query.get_or_404(member_id)
+                book = Books.query.get_or_404(book_id)
+                book.stocks_left = book.stocks_left - 1
+                book.issued = book.issued + 1
+                member.outstanding_debt = member.outstanding_debt + book.rent_price
+                member.books_in_possession = member.books_in_possession + 1
+                newTransaction = Transactions(book_id=book_id, member_id=member_id, transaction_type=transaction_type)
+                try:
+                    db.session.add(newTransaction)
+                    db.session.commit()
+                    return jsonify({'message': 'database changed'})
+                except:
+                    return jsonify({'message': 'error happened'})
+                
+            elif not getAvailability(book_id):
+                return jsonify({'message': 'Book not available'})
 
-        elif checkOutstandingDebtLimitCrossed(member_id):
-            return 'The user cannot be issued anymore books as the outstanding debt limit is crossed'
+            elif checkOutstandingDebtLimitCrossed(member_id):
+                return jsonify({'message': 'The user cannot be issued anymore books as the outstanding debt limit is crossed'})
+        except:
+            return jsonify({'message':'not receiving data'})
+        #should not issue the book either if its out of stock or if the outstanding debt is above 500
+        # if getAvailability(book_id) and not checkOutstandingDebtLimitCrossed(member_id):
+        #     member = Members.query.get_or_404(member_id)
+        #     book = Books.query.get_or_404(book_id)
+        #     book.stocks_left = book.stocks_left - 1
+        #     book.issued = book.issued + 1
+        #     member.outstanding_debt = member.outstanding_debt + book.rent_price
+        #     member.books_in_possession = member.books_in_possession + 1
+        #     newTransaction = Transactions(book_id=book_id, member_id=member_id, transaction_type=transaction_type)
+        #     try:
+        #         db.session.add(newTransaction)
+        #         db.session.commit()
+        #         return redirect('/transactions')
+        #     except:
+        #         return 'Database error'
+            
+        # elif not getAvailability(book_id):
+        #     return 'The requested book is out of stock'
+
+        # elif checkOutstandingDebtLimitCrossed(member_id):
+        #     return 'The user cannot be issued anymore books as the outstanding debt limit is crossed'
 
 
 #return book transaction

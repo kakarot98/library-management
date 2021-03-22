@@ -11,8 +11,10 @@ import {
   TextField,
 } from "@material-ui/core";
 import axios from "axios";
+import IssueBook from "./IssueBook";
 
 const Book = ({ book, deleteBook, updateBook }) => {
+  const [bookDetails, setBookDetails] = useState(book);
   const [bookName, setBookName] = useState(book.book_name);
   const [tempBook, setTempBook] = useState(book.book_name);
   const [authorName, setAuthorName] = useState(book.author_name);
@@ -139,6 +141,9 @@ const Book = ({ book, deleteBook, updateBook }) => {
         >
           Delete
         </Button>
+      </TableCell>
+      <TableCell>
+        <IssueBook bookDetails = {bookDetails}/>
       </TableCell>
     </TableRow>
   );

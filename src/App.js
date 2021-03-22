@@ -5,7 +5,7 @@ import HomePage from "./components/HomePage";
 import Navbar from "./components/Navbar";
 import Books from "./components/books/Books";
 import Members from "./components/members/Members";
-import TransactionsList from "./components/TransactionsList";
+import Transactions from "./components/Transactions";
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
               <Members />
             </Route>
             <Route exact path="/transactions">
-              <TransactionsList />
+              <Transactions />
             </Route>
           </Switch>
         </div>

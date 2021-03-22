@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from marshmallow_sqlalchemy.fields import Nested
 #to convert non serializable sql data to json easily without writing custom serializer
 import yaml
 import time
@@ -24,13 +26,14 @@ class Books(db.Model):
     rent_price = db.Column(db.Integer, default=60)
     stocks_left = db.Column(db.Integer, default=1)
     issued = db.Column(db.Integer, default=0)
+    # transactions = db.relationship("Transactions", backref="books")
 
     def __repr__(self):
         return "<Book %r>", self.book_id
 
 
 #making schema to convert to json later
-class BooksSchema(ma.SQLAlchemyAutoSchema):#noqa
+class BooksSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Books
 
@@ -42,9 +45,10 @@ class Members(db.Model):
     outstanding_debt = db.Column(db.Integer, nullable=False, default=0)
     total_paid = db.Column(db.Integer, nullable=False, default=0)
     books_in_possession = db.Column(db.Integer, nullable=False, default=0)
+    # transactions = db.relationship("Transactions", backref="members")
 
 
-class MembersScehema(ma.SQLAlchemyAutoSchema):#noqa
+class MembersScehema(SQLAlchemyAutoSchema):
     class Meta:
         model = Members
 
@@ -53,10 +57,19 @@ class MembersScehema(ma.SQLAlchemyAutoSchema):#noqa
 class Transactions(db.Model):
     transaction_id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('books.book_id'))
-    books = db.relationship("Books")
+    books = db.relationship("Books", backref="transactions")
     member_id = db.Column(db.Integer, db.ForeignKey('members.member_id'))
-    members = db.relationship('Members')
+    members = db.relationship('Members', backref="transactions")
     transaction_type = db.Column(db.String(6), nullable=False)
+
+
+class TransactionsSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Transactions
+        include_fk = True        
+    members = Nested(MembersScehema)
+    books = Nested(BooksSchema)
+        
 
 
 #returns true if book is available to be issued
@@ -259,10 +272,26 @@ def delete_member(id):
 def transactions():
 
     if request.method == 'GET':
+
+        # memberDetails = Members.query.all()
+        # membersSchema = MembersScehema(many=True)
+        # memberDetails = membersSchema.dump(memberDetails)
+        # return jsonify({'memberDetails': memberDetails})
+
         books = Books.query.all()
+        booksSchema = BooksSchema(many=True)
+        books = booksSchema.dump(books)
+
         members = Members.query.all()
-        transactions = Transactions.query.all()
-        return render_template('transactions.html', books=books, members=members, transactions=transactions)    
+        membersSchema=MembersScehema(many=True)
+        members = membersSchema.dump(members)
+
+        transactions = Transactions.query.all()#.join(Members).join(Books).filter(Books.book_id==Transactions.book_id)
+        transactionsSchema=TransactionsSchema(many=True)
+        transactions = transactionsSchema.dump(transactions)
+
+        return jsonify({'transactions': transactions, 'members':members, 'books': books}) 
+        #render_template('transactions.html', books=books, members=members, transactions=transactions)    
     # if request.method=='POST':
     #     book_id = request.form['book']
     #     member_id = request.form['member']

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useNavigate } from "react";
 import {
   Button,
   Dialog,
@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import axios from "axios";
+import {BrowserRouter as Router, Route,Redirect} from 'react-router-dom'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -54,13 +55,15 @@ const IssueBook = ({ bookDetails }) => {
 
   const openIssueDialog = () => {
     // console.log(typeof bookDetails.book_id)
+    setMemberName(``)
+    setMembersList([]);
     setIssueDialoge(true);
     fetchTransactionsTable();
   };
 
   const closeIssueDialog = () => {
     // membersList.map(member=>console.log(member.member_name))
-    console.log(typeof memberName)
+    // console.log(typeof memberName)
     setIssueDialoge(false);
     setMemberName(``)
     setMembersList([]);
@@ -111,7 +114,7 @@ const IssueBook = ({ bookDetails }) => {
           <Button onClick={() => closeIssueDialog()} color="primary">
             Cancel
           </Button>
-          {membersList.length ? (<Button onClick={()=>issueBook(bookDetails.book_id,memberName)} color="primary">Issue</Button>):(<div></div>)}
+          {membersList.length ? (<Button onClick={()=>{issueBook(bookDetails.book_id,memberName);}} color="primary">Issue</Button>):(<div></div>)}
           
         </DialogActions>
       </Dialog>

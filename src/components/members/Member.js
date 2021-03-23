@@ -11,6 +11,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import axios from "axios";
+import ReturnBook from './ReturnBook'
 
 const Member = ({ member, deleteMember, updateMember }) => {
   const [memberName, setMemberName] = useState(member.member_name);
@@ -96,6 +97,9 @@ const Member = ({ member, deleteMember, updateMember }) => {
         >
           Delete
         </Button>
+      </TableCell>
+      <TableCell>
+        <ReturnBook member={member}/>
       </TableCell>
     </TableRow>
   );

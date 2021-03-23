@@ -406,10 +406,13 @@ def returnBook():
         return render_template('return-book.html',books=books, members=members, transactions=transactions)
     
     if request.method=='POST':
-        book_id = request.form['book']
-        member_id = request.form['member']
-        payment = request.form.get('payment', type=int)
+        details = request.get_json()
+        book_id = int(details['book'])
+        member_id = int(details['member'])
+        payment = int(details['payment'])
         transaction_type = "return"
+        
+        #return jsonify({'detsils':details, 'type of payment': payment})
         #check if the user possess any book or not
 
         #if the member has books_in_possession more than 0
@@ -428,14 +431,14 @@ def returnBook():
             try:
                 db.session.add(newTransaction)
                 db.session.commit()
-                return redirect('/transactions')
+                return jsonify({'message':'database changed'})
             except:
-                return 'Database error'
+                return jsonify({'message':'database NOT changed'})
 
         #if the member has books_in_possesion as 0
         if not checkAnyBooksInPossession(member_id):
             #do not retyrn any book
-            return 'This member currently does not have any book in possession to be able to return'
+            return jsonify({'message':'This member currently does not have any book in possession to be able to return'})
 
         
 

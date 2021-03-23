@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import axios from "axios";
-import {BrowserRouter as Router, Route,Redirect} from 'react-router-dom'
+import {BrowserRouter as Router, Route,Redirect, useHistory } from 'react-router-dom'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -34,6 +34,10 @@ const useStyles = makeStyles((theme) => ({
 
 const IssueBook = ({ bookDetails }) => {
   const classes = useStyles();
+  let history = useHistory();
+  const redirectToTransactions = () => {
+    history.push("/transactions");
+  }
 
 
   const [stocksLeft, setStocksLeft] = useState(bookDetails.stocks);
@@ -69,11 +73,15 @@ const IssueBook = ({ bookDetails }) => {
     setMembersList([]);
   };
 
+
+  
+
+
   const issueBook = async (bookID, memberID) => {
     await axios.post('/transactions/issue-book',{
       book: bookID,
       member: memberID
-    }).then(res=>{console.log(res); closeIssueDialog()})
+    }).then(res=>{console.log(res); closeIssueDialog()}).then(()=> redirectToTransactions())
   };
 
   return (

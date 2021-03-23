@@ -43,6 +43,7 @@ const Book = ({ book, deleteBook, updateBook }) => {
         {bookName}
       </TableCell>
       <TableCell align="right">{authorName}</TableCell>
+      <TableCell align="right">{book.issued}</TableCell>
       <TableCell align="right">{rentPrice}</TableCell>
       <TableCell align="right">{stocks}</TableCell>
       <TableCell align="right">

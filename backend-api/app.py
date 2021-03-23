@@ -135,6 +135,7 @@ def books():
         except:
             return jsonify({'error':'Error in book details or database'})
 
+
 #deleting book
 @app.route('/books/<int:id>/delete', methods=['DELETE'])
 def delete_book(id):
@@ -148,6 +149,7 @@ def delete_book(id):
             return jsonify({'bookDetails': bookDetails})
         except:
             return jsonify({'error':'Error in deleting the book'})
+
 
 #updating the book details
 @app.route('/books/<int:id>/update', methods=['GET','POST'])
@@ -207,9 +209,6 @@ def members():
                 return jsonify({'error': 'Name not entered properly'})
         
             newMember = Members(member_name=newMemberName)
-
-            # memberName=request.form['memberName']        
-            # newMember = Members(member_name=memberName)
 
             db.session.add(newMember)
             db.session.commit()
@@ -273,11 +272,6 @@ def transactions():
 
     if request.method == 'GET':
 
-        # memberDetails = Members.query.all()
-        # membersSchema = MembersScehema(many=True)
-        # memberDetails = membersSchema.dump(memberDetails)
-        # return jsonify({'memberDetails': memberDetails})
-
         books = Books.query.all()
         booksSchema = BooksSchema(many=True)
         books = booksSchema.dump(books)
@@ -291,47 +285,7 @@ def transactions():
         transactions = transactionsSchema.dump(transactions)
 
         return jsonify({'transactions': transactions, 'members':members, 'books': books}) 
-        #render_template('transactions.html', books=books, members=members, transactions=transactions)    
-    # if request.method=='POST':
-    #     book_id = request.form['book']
-    #     member_id = request.form['member']
-    #     transaction_type = request.form['transactionType']
-    #     if transaction_type=='issue':
-            
-    #         #should not issue the book either if its out of stock or if the outstanding debt is above 500
-    #         if getAvailability(book_id) and not checkOutstandingDebtLimitCrossed(member_id):
-    #             member = Members.query.get_or_404(member_id)
-    #             book = Books.query.get_or_404(book_id)
-    #             book.stocks_left = book.stocks_left - 1
-    #             book.issued = book.issued + 1
-    #             member.outstanding_debt = member.outstanding_debt + book.rent_price
-    #             newTransaction = Transactions(book_id=book_id, member_id=member_id, transaction_type=transaction_type)
-    #             try:
-    #                 db.session.add(newTransaction)
-    #                 db.session.commit()
-    #                 return redirect('/transactions')
-    #             except:
-    #                 return 'Database error'
-                
-    #         elif not getAvailability(book_id):
-    #             return 'The requested book is out of stock'
 
-    #         elif checkOutstandingDebtLimitCrossed(member_id):
-    #             return 'The user cannot be issued anymore books as the outstanding debt limit is crossed'
-
-    #     if transaction_type=='return':
-    #         member = Members.query.get_or_404(member_id)
-    #         book = Books.query.get_or_404(book_id)
-    #         book.stocks_left = book.stocks_left + 1
-    #         book.issued = book.issued - 1            
-    #         member.outstanding_debt = member.outstanding_debt - book.rent_price
-    #         newTransaction = Transactions(book_id=book_id, member_id=member_id, transaction_type=transaction_type)
-    #         try:
-    #             db.session.add(newTransaction)
-    #             db.session.commit()
-    #             return redirect('/transactions')
-    #         except:
-    #             return 'Database error'
 
 
 #issue book transaction
@@ -373,26 +327,7 @@ def issueBook():
         except:
             return jsonify({'message':'not receiving data'})
         #should not issue the book either if its out of stock or if the outstanding debt is above 500
-        # if getAvailability(book_id) and not checkOutstandingDebtLimitCrossed(member_id):
-        #     member = Members.query.get_or_404(member_id)
-        #     book = Books.query.get_or_404(book_id)
-        #     book.stocks_left = book.stocks_left - 1
-        #     book.issued = book.issued + 1
-        #     member.outstanding_debt = member.outstanding_debt + book.rent_price
-        #     member.books_in_possession = member.books_in_possession + 1
-        #     newTransaction = Transactions(book_id=book_id, member_id=member_id, transaction_type=transaction_type)
-        #     try:
-        #         db.session.add(newTransaction)
-        #         db.session.commit()
-        #         return redirect('/transactions')
-        #     except:
-        #         return 'Database error'
-            
-        # elif not getAvailability(book_id):
-        #     return 'The requested book is out of stock'
 
-        # elif checkOutstandingDebtLimitCrossed(member_id):
-        #     return 'The user cannot be issued anymore books as the outstanding debt limit is crossed'
 
 
 #return book transaction
@@ -412,9 +347,6 @@ def returnBook():
         payment = int(details['payment'])
         transaction_type = "return"
         
-        #return jsonify({'detsils':details, 'type of payment': payment})
-        #check if the user possess any book or not
-
         #if the member has books_in_possession more than 0
         if checkAnyBooksInPossession(member_id):
             #return the book

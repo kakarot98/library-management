@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 
 
@@ -34,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 const ReturnBook = ({ member }) => {
+  let history = useHistory();
+  const redirectToTransactions = () => {
+    history.push("/transactions");
+  }
 
     const classes = useStyles();
 
@@ -77,7 +82,7 @@ const ReturnBook = ({ member }) => {
         book: bookID,
         member: memberID,
         payment: payemnt
-      }).then(res=>{console.log(res); closeReturnDialog()})
+      }).then(res=>{console.log(res); closeReturnDialog()}).then(()=>redirectToTransactions())
   }
 
   return (

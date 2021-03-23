@@ -32,7 +32,7 @@ const Navbar = () => {
             <Link to="/members">Members List</Link>
           </Typography>
           <Typography variant="subtitle1" className={classes.title}>
-            <Link to="/transactions">Report</Link>
+            <Link to="/transactions">All Transactions</Link>
           </Typography>
         </Toolbar>
       </AppBar>

@@ -179,14 +179,17 @@ def update_book(id):
 
 
 #Check transactions of the particular book
-@app.route('/books/<int:id>/transactions')
+@app.route('/books/<int:id>/transactions', methods=['GET'])
 def showBookTransactions(id):
-    transactions = Transactions.query.filter(Transactions.book_id==id)
-    length = 0
-    for transaction in transactions:
-        length = length+1    
-    print(length)
-    return render_template('book-transaction.html', transactions=transactions, length=length)
+    if request.method=='GET':        
+        transactions = Transactions.query.filter(Transactions.book_id==id)
+        transactionsSchema=TransactionsSchema(many=True)
+        transactions = transactionsSchema.dump(transactions)
+        length = 0
+        # for transaction in transactions:
+        #     length = length+1    
+        # print(length)
+        return jsonify({'transactions':transactions})
 
 
 

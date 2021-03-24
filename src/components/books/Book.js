@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Typography,
   TableCell,
   TableRow,
   Button,
@@ -12,8 +13,14 @@ import {
 } from "@material-ui/core";
 import axios from "axios";
 import IssueBook from "./IssueBook";
+import { useHistory,Link, Redirect } from 'react-router-dom'
+import BookTransactions from './BookTransactions'
 
 const Book = ({ book, deleteBook, updateBook }) => {
+
+  
+
+
   const [bookDetails, setBookDetails] = useState(book);
   const [bookName, setBookName] = useState(book.book_name);
   const [tempBook, setTempBook] = useState(book.book_name);
@@ -24,6 +31,15 @@ const Book = ({ book, deleteBook, updateBook }) => {
   const [stocks, setStocks] = useState(book.stocks_left);
   const [tempStocks, setTempStocks] = useState(book.stocks_left);
   const [updateBookDialog, setUpdateBookDialog] = useState(false);
+
+
+  let history = useHistory();
+  const redirectBookTransaction = () => {
+    // history.push(`/books/${bookDetails.book_id}/transactions`);
+   
+    return <Redirect to={`/books/${bookDetails.book_id}/transactions`} />
+  }
+
 
   const openUpdateBookDialog = () => {
     setUpdateBookDialog(true);
@@ -36,6 +52,8 @@ const Book = ({ book, deleteBook, updateBook }) => {
     setTempRent(rentPrice);
     setTempStocks(stocks);
   };
+
+  
 
   return (
     <TableRow key={book.book_id}>
@@ -145,6 +163,14 @@ const Book = ({ book, deleteBook, updateBook }) => {
       </TableCell>
       <TableCell>
         <IssueBook bookDetails = {bookDetails}/>
+      </TableCell>
+      <TableCell>
+        {/* <Button onClick={()=><Redirect to={{pathname:`/books/${bookDetails.book_id}/transactions`, state:{id:bookDetails.book_id}}} />}>Related Transaction</Button> */}
+        
+        
+      <Typography variant="subtitle1">
+            <Link to={`books/${bookDetails.book_id}/transactions`}>Related Transactions</Link>
+          </Typography>
       </TableCell>
     </TableRow>
   );

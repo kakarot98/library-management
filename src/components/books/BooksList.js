@@ -55,7 +55,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
               <TableCell align="right">Issued</TableCell>
               <TableCell align="right">Rent Price</TableCell>
               <TableCell align="right">Stocks Left</TableCell>
-              <TableCell align="center" colSpan={3}>
+              <TableCell align="center" colSpan={4}>
                 Actions
               </TableCell>
             </TableRow>

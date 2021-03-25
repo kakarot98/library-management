@@ -5,9 +5,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from "@material-ui/core";
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import axios from "axios";
 
 const AddBook = ({ fetchBookList }) => {
@@ -47,7 +47,7 @@ const AddBook = ({ fetchBookList }) => {
 
   return (
     <div>
-      <Button variant="contained" onClick={() => openAddBookDialog()}>
+      <Button variant="contained" onClick={() => openAddBookDialog()} startIcon={<AddCircleIcon/>}>
         Add New Book
       </Button>
       <Dialog

@@ -3,6 +3,7 @@ import axios from "axios";
 import BookList from "./BooksList";
 import AddBook from "./AddBook";
 
+
 const Books = () => {
   const [booksList, setBooksList] = useState([]); //to store book details
 
@@ -22,8 +23,9 @@ const Books = () => {
 
   return booksList.length ? (
     <div>
-      <BookList booksList={booksList} fetchBookList={fetchBookList} />
       <AddBook fetchBookList={fetchBookList} />
+      <BookList booksList={booksList} fetchBookList={fetchBookList} />
+      
     </div>
   ) : (
     <h1>Loading...</h1>

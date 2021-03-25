@@ -5,9 +5,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from "@material-ui/core";
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import axios from "axios";
 
 const AddMember = ({ fetchMembersList }) => {
@@ -38,7 +38,7 @@ const AddMember = ({ fetchMembersList }) => {
 
   return (
     <div>
-      <Button variant="contained" onClick={() => openAddMemberDialog()}>
+      <Button variant="contained" onClick={() => openAddMemberDialog()} startIcon={<AddCircleIcon/>}>
         Add New Member
       </Button>
       <Dialog

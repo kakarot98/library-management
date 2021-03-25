@@ -22,11 +22,12 @@ const Members = () => {
 
   return membersList.length ? (
     <div>
+      <AddMember fetchMembersList={fetchMembersList} />
       <MembersList
         fetchMembersList={fetchMembersList}
         membersList={membersList}
       />
-      <AddMember fetchMembersList={fetchMembersList} />
+      
     </div>
   ) : (
     <h1>Loading ...</h1>

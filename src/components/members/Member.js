@@ -9,13 +9,21 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  IconButton
 } from "@material-ui/core";
-import DeleteForeverTwoToneIcon from '@material-ui/icons/DeleteForeverTwoTone';
-import EditTwoToneIcon from '@material-ui/icons/EditTwoTone';
-import ReturnBook from './ReturnBook'
+import { makeStyles } from "@material-ui/core/styles";
+import DeleteForeverTwoToneIcon from "@material-ui/icons/DeleteForeverTwoTone";
+import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
+import ReturnBook from "./ReturnBook";
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
 
 const Member = ({ member, deleteMember, updateMember }) => {
+  const classes = useStyles();
+
   const [memberName, setMemberName] = useState(member.member_name);
   const [outstandingDebt, setOutstandingDebt] = useState(
     member.outstanding_debt
@@ -47,17 +55,16 @@ const Member = ({ member, deleteMember, updateMember }) => {
       <TableCell align="center">{totalPaid}</TableCell>
       <TableCell align="center">{booksInPossesion}</TableCell>
       <TableCell align="center">
-        {/* <Button
+        <Button
+          className={classes.button}
           variant="contained"
           color="primary"
           onClick={() => openUpdateMemberDialog()}
+          startIcon={<EditTwoToneIcon />}
         >
           Update
-        </Button> */}
-        <IconButton onClick={() => openUpdateMemberDialog()}>
-          <EditTwoToneIcon />
-        </IconButton>
-        
+        </Button>
+
         <Dialog
           open={updateMemberDialog}
           onClose={() => closeUpdateMemberDialog()}
@@ -92,15 +99,21 @@ const Member = ({ member, deleteMember, updateMember }) => {
             </Button>
           </DialogActions>
         </Dialog>
-        <IconButton onClick={() => {
+        <Button
+          className={classes.button}
+          variant="contained"
+          color="secondary"
+          onClick={() => {
             deleteMember(member.member_id);
-          }}>
-          <DeleteForeverTwoToneIcon/>
-        </IconButton>
+          }}
+          startIcon={<DeleteForeverTwoToneIcon />}
+        >
+          Delete
+        </Button>
       </TableCell>
-      
-      <TableCell >
-        <ReturnBook member={member}/>
+
+      <TableCell>
+        <ReturnBook member={member} />
       </TableCell>
     </TableRow>
   );

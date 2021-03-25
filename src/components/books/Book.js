@@ -7,18 +7,32 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
-  IconButton,
 } from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
 import DeleteForeverTwoToneIcon from '@material-ui/icons/DeleteForeverTwoTone';
 import EditTwoToneIcon from '@material-ui/icons/EditTwoTone';
 import IssueBook from "./IssueBook";
 import { useHistory, Link, Redirect } from "react-router-dom";
 // import BookTransactions from './BookTransactions'
 
+
+
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
+
+
+
+
 const Book = ({ book, deleteBook, updateBook }) => {
+  const classes = useStyles();
+
+
+
   const [bookDetails, setBookDetails] = useState(book);
   const [bookName, setBookName] = useState(book.book_name);
   const [tempBook, setTempBook] = useState(book.book_name);
@@ -59,16 +73,15 @@ const Book = ({ book, deleteBook, updateBook }) => {
       <TableCell >{rentPrice}</TableCell>
       <TableCell >{stocks}</TableCell>
       <TableCell >
-        {/* <Button
+        <Button
+        className={classes.button}
           variant="contained"
           color="primary"
           onClick={() => openUpdateBookDialog()}
+          startIcon={<EditTwoToneIcon />}
         >
           Update
-        </Button> */}
-        <IconButton onClick={() => openUpdateBookDialog()}>
-          <EditTwoToneIcon />
-        </IconButton>
+        </Button>
 
         <Dialog
           open={updateBookDialog}
@@ -145,21 +158,26 @@ const Book = ({ book, deleteBook, updateBook }) => {
             </Button>
           </DialogActions>
         </Dialog>
-
-        <IconButton onClick={() => {
+        <Button
+        className={classes.button}
+          variant="contained"
+          color="secondary"
+          onClick={() => {
             console.log(book.book_id);
             deleteBook(book.book_id);
-          }}>
-          <DeleteForeverTwoToneIcon />
-        </IconButton>
+          }}
+          startIcon={<DeleteForeverTwoToneIcon />}
+        >
+          Delete
+        </Button>
+        
+
       </TableCell>
       
       <TableCell>
-        <IssueBook bookDetails={bookDetails} />
+        <IssueBook bookDetails={bookDetails}/>
       </TableCell>
       <TableCell>
-        {/* <Button onClick={()=><Redirect to={{pathname:`/books/${bookDetails.book_id}/transactions`, state:{id:bookDetails.book_id}}} />}>Related Transaction</Button> */}
-
         <Typography variant="subtitle1">
           <Link to={`books/${bookDetails.book_id}/transactions`}>
             Related Transactions

@@ -20,12 +20,15 @@ const BooksList = ({ booksList, fetchBookList }) => {
   }, []);
 
   //delete book function
-  const deleteBook = async (id) => {
-    await axios.delete(`/books/${id}/delete`).then((res) => {
-      fetchBookList();
-      setList(res.data.bookDetails);
-      console.log(res.data.bookDetails);
-    });
+  const deleteBook = (id) => {
+    axios
+      .delete(`/books/${id}/delete`)
+      .then((res) => {
+        fetchBookList();
+        setList(res.data.bookDetails);
+        console.log(res.data.bookDetails);
+      })
+      .catch((error) => {});
     console.log(id);
   };
 
@@ -51,11 +54,11 @@ const BooksList = ({ booksList, fetchBookList }) => {
           <TableHead>
             <TableRow>
               <TableCell>Book Name</TableCell>
-              <TableCell align="right">Author Name</TableCell>
-              <TableCell align="right">Issued</TableCell>
-              <TableCell align="right">Rent Price</TableCell>
-              <TableCell align="right">Stocks Left</TableCell>
-              <TableCell align="center" colSpan={4}>
+              <TableCell >Author Name</TableCell>
+              <TableCell >Issued</TableCell>
+              <TableCell >Rent Price</TableCell>
+              <TableCell >Stocks Left</TableCell>
+              <TableCell align="center" colSpan={3}>
                 Actions
               </TableCell>
             </TableRow>

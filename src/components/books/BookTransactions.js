@@ -1,39 +1,31 @@
 import React, { useEffect, useState } from "react";
 import {
-    
-  Button,
-  TextField,
-  InputLabel,
   Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Typography
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
 } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
 import axios from "axios";
 
-
 const BookTransactions = (props) => {
-    const [transactionDetails, setTransactionDetails] = useState([])
-    const [id, setId] = useState(props.match.params.id)
+  const [transactionDetails, setTransactionDetails] = useState([]);
+  const [id, setId] = useState(props.match.params.id);
 
-    useEffect(()=>{
-const getTransactions = async () => {
-  await axios.get(`/books/${id}/transactions`).then(res => {console.log(res.data)})
-}
-getTransactions()
-// console.log(props.match.params.id)
-    },[])
+  useEffect(() => {
+    const getTransactions = async () => {
+      const res = await axios.get(`/books/${id}/transactions`);
+      setTransactionDetails(res.data.transactions);
+    };
+    getTransactions();
+  }, []);
 
-
-
-    return transactionDetails.length ? (
-        <div>
-           <TableContainer component={Paper}>
+  return transactionDetails.length ? (
+    <div>
+      <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -43,16 +35,26 @@ getTransactions()
             </TableRow>
           </TableHead>
           <TableBody key={transactionDetails.transaction_id}>
-            {transactionDetails.map(transaction => (<TableRow key={transaction.transaction_id}>
-                <TableCell component="th" scope="row">{transaction.books.book_name}</TableCell>
-                <TableCell align="right">{transaction.members.member_name}</TableCell>
-                <TableCell align="right">{transaction.transaction_type}</TableCell>
-            </TableRow>))}
+            {transactionDetails.map((transaction) => (
+              <TableRow key={transaction.transaction_id}>
+                <TableCell component="th" scope="row">
+                  {transaction.books.book_name}
+                </TableCell>
+                <TableCell align="right">
+                  {transaction.members.member_name}
+                </TableCell>
+                <TableCell align="right">
+                  {transaction.transaction_type}
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
-        </div>
-    ):(<Typography variant="h6">No Transaction Yet</Typography>)
-}
+    </div>
+  ) : (
+    <Typography variant="h6">No Transaction Yet</Typography>
+  );
+};
 
-export default BookTransactions
+export default BookTransactions;

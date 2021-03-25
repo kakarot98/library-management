@@ -8,7 +8,6 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 
 const AddMember = ({ fetchMembersList }) => {
@@ -40,7 +39,7 @@ const AddMember = ({ fetchMembersList }) => {
   return (
     <div>
       <Button variant="contained" onClick={() => openAddMemberDialog()}>
-        Add New Book
+        Add New Member
       </Button>
       <Dialog
         open={addMemberDialog}

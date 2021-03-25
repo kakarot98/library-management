@@ -9,8 +9,10 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
+  IconButton
 } from "@material-ui/core";
-import axios from "axios";
+import DeleteForeverTwoToneIcon from '@material-ui/icons/DeleteForeverTwoTone';
+import EditTwoToneIcon from '@material-ui/icons/EditTwoTone';
 import ReturnBook from './ReturnBook'
 
 const Member = ({ member, deleteMember, updateMember }) => {
@@ -41,17 +43,21 @@ const Member = ({ member, deleteMember, updateMember }) => {
       <TableCell component="th" scope="row">
         {memberName}
       </TableCell>
-      <TableCell align="right">{outstandingDebt}</TableCell>
-      <TableCell align="right">{totalPaid}</TableCell>
-      <TableCell align="right">{booksInPossesion}</TableCell>
-      <TableCell align="right">
-        <Button
+      <TableCell align="center">{outstandingDebt}</TableCell>
+      <TableCell align="center">{totalPaid}</TableCell>
+      <TableCell align="center">{booksInPossesion}</TableCell>
+      <TableCell align="center">
+        {/* <Button
           variant="contained"
           color="primary"
           onClick={() => openUpdateMemberDialog()}
         >
           Update
-        </Button>
+        </Button> */}
+        <IconButton onClick={() => openUpdateMemberDialog()}>
+          <EditTwoToneIcon />
+        </IconButton>
+        
         <Dialog
           open={updateMemberDialog}
           onClose={() => closeUpdateMemberDialog()}
@@ -86,19 +92,14 @@ const Member = ({ member, deleteMember, updateMember }) => {
             </Button>
           </DialogActions>
         </Dialog>
-      </TableCell>
-      <TableCell align="right">
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => {
+        <IconButton onClick={() => {
             deleteMember(member.member_id);
-          }}
-        >
-          Delete
-        </Button>
+          }}>
+          <DeleteForeverTwoToneIcon/>
+        </IconButton>
       </TableCell>
-      <TableCell>
+      
+      <TableCell >
         <ReturnBook member={member}/>
       </TableCell>
     </TableRow>

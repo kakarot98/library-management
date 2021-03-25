@@ -47,10 +47,10 @@ const MembersList = ({ fetchMembersList, membersList }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Member Name</TableCell>
-              <TableCell align="right">Outstanding Debt</TableCell>
-              <TableCell align="right">Total Paid Till Date</TableCell>
-              <TableCell align="right">Books in Possession Currently</TableCell>
+              <TableCell align="center">Member Name</TableCell>
+              <TableCell align="center">Outstanding Debt</TableCell>
+              <TableCell align="center">Total Paid Till Date</TableCell>
+              <TableCell align="center">Books in Possession Currently</TableCell>
               <TableCell align="center" colSpan={2}>
                 Actions
               </TableCell>

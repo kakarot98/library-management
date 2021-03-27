@@ -13,27 +13,34 @@ import Book from "./Book";
 import SearchBar from "material-ui-search-bar";
 
 const BooksList = ({ booksList, fetchBookList }) => {
-
-
-  const [searchValue, setSearchValue] = useState("")
-  const [rows, setRows] = useState(booksList)
-
-  const requestSearch = (searchVal)=>{
-    const filteredRows = list.filter(row => {
-      return row.book_name.toLowerCase().includes(searchVal.toLowerCase())
-    })
-    setRows(filteredRows)
-  }
-
-  const cancelSearch = ()=>{
-    setSearchValue("")
-    requestSearch(searchValue)
-  }
-
-
   const [list, setList] = useState([]);
+  const [searchBookValue, setSearchBookValue] = useState("");
+  const [searchAuthorValue, setSearchAuthorValue] = useState("");
+  const [rows, setRows] = useState(booksList);
 
+  const requestSearchByBookName = (searchVal) => {
+    const filteredRows = list.filter((row) => {
+      return row.book_name.toLowerCase().includes(searchVal.toLowerCase());
+    });
+    setRows(filteredRows);
+  };
 
+  const cancelSearchByBookName = () => {
+    setSearchBookValue("");
+    requestSearchByBookName(searchBookValue);
+  };
+
+  const requestSearchByAuthorName = (searchVal) => {
+    const filteredRows = list.filter((row) => {
+      return row.author_name.toLowerCase().includes(searchVal.toLowerCase());
+    });
+    setRows(filteredRows);
+  };
+
+  const cancelSearchByAuthorName = () => {
+    setSearchAuthorValue("");
+    requestSearchByAuthorName(searchAuthorValue);
+  };
 
   useEffect(() => {
     setList(booksList);
@@ -69,19 +76,29 @@ const BooksList = ({ booksList, fetchBookList }) => {
   };
 
   return list.length ? (
+    <Paper>
+      <SearchBar
+        placeholder="Search by book name"
+        value={searchBookValue}
+        onChange={(searchVal) => requestSearchByBookName(searchVal)}
+        onCancelSearch={() => cancelSearchByBookName()}
+      />
+      <SearchBar
+        placeholder="Search by author name"
+        value={searchAuthorValue}
+        onChange={(searchVal) => requestSearchByAuthorName(searchVal)}
+        onCancelSearch={() => cancelSearchByAuthorName()}
+      />
 
-      <Paper>
-        <SearchBar placeholder="Search by book name" value={searchValue} onChange={searchVal => requestSearch(searchVal)} onCancelSearch={()=>cancelSearch()}/>
-        
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Book Name</TableCell>
-              <TableCell >Author Name</TableCell>
-              <TableCell >Issued</TableCell>
-              <TableCell >Rent Price</TableCell>
-              <TableCell >Stocks Left</TableCell>
+              <TableCell>Author Name</TableCell>
+              <TableCell>In Circulation</TableCell>
+              <TableCell>Rent Price</TableCell>
+              <TableCell>Stocks Left</TableCell>
               <TableCell align="center" colSpan={3}>
                 Actions
               </TableCell>
@@ -99,8 +116,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      </Paper>
-    
+    </Paper>
   ) : (
     <h2>Loading</h2>
   );

@@ -10,14 +10,12 @@ import {
   DialogTitle,
   TextField,
 } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
-import DeleteForeverTwoToneIcon from '@material-ui/icons/DeleteForeverTwoTone';
-import EditTwoToneIcon from '@material-ui/icons/EditTwoTone';
+import { makeStyles } from "@material-ui/core/styles";
+import DeleteForeverTwoToneIcon from "@material-ui/icons/DeleteForeverTwoTone";
+import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import IssueBook from "./IssueBook";
 import { useHistory, Link, Redirect } from "react-router-dom";
 // import BookTransactions from './BookTransactions'
-
-
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -25,13 +23,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-
-
 const Book = ({ book, deleteBook, updateBook }) => {
   const classes = useStyles();
-
-
 
   const [bookDetails, setBookDetails] = useState(book);
   const [bookName, setBookName] = useState(book.book_name);
@@ -68,13 +61,13 @@ const Book = ({ book, deleteBook, updateBook }) => {
       <TableCell component="th" scope="row">
         {bookName}
       </TableCell>
-      <TableCell >{authorName}</TableCell>
-      <TableCell >{book.issued}</TableCell>
-      <TableCell >{rentPrice}</TableCell>
-      <TableCell >{stocks}</TableCell>
-      <TableCell >
+      <TableCell>{authorName}</TableCell>
+      <TableCell>{book.issued}</TableCell>
+      <TableCell>{rentPrice}</TableCell>
+      <TableCell>{stocks}</TableCell>
+      <TableCell>
         <Button
-        className={classes.button}
+          className={classes.button}
           variant="contained"
           color="primary"
           onClick={() => openUpdateBookDialog()}
@@ -159,7 +152,7 @@ const Book = ({ book, deleteBook, updateBook }) => {
           </DialogActions>
         </Dialog>
         <Button
-        className={classes.button}
+          className={classes.button}
           variant="contained"
           color="secondary"
           onClick={() => {
@@ -170,12 +163,10 @@ const Book = ({ book, deleteBook, updateBook }) => {
         >
           Delete
         </Button>
-        
-
       </TableCell>
-      
+
       <TableCell>
-        <IssueBook bookDetails={bookDetails}/>
+        <IssueBook bookDetails={bookDetails} />
       </TableCell>
       <TableCell>
         <Typography variant="subtitle1">

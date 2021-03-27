@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useNavigate } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Dialog,
@@ -10,38 +10,30 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  FormHelperText,
   FormControl,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
-
-
 const useStyles = makeStyles((theme) => ({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 150,
-      minHeight:100,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  }));
-
-
-
-
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 150,
+    minHeight: 100,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 const ReturnBook = ({ member }) => {
   let history = useHistory();
   const redirectToTransactions = () => {
     history.push("/transactions");
-  }
+  };
 
-    const classes = useStyles();
-
+  const classes = useStyles();
 
   const [booksInPossession, setbooksInPossession] = useState(
     member.books_in_possession
@@ -49,18 +41,36 @@ const ReturnBook = ({ member }) => {
   const [returnDialog, setReturnDialoge] = useState(false);
   const [booksList, setBooksList] = useState([]);
   const [book, setBook] = useState(``);
-  const [payment, setPayment] = useState(``)
+  const [payment, setPayment] = useState(``);
+  const tempList = [];
+
+  const fetchBooksInPossessionList = async (id) => {
+    await axios
+      .get(`/members/${member.member_id}/books-in-possession`)
+      .then((res) => {
+        console.log(res.data.transactions);
+        res.data.transactions.map((transaction) => {
+          if (transaction.balance > 0) {
+            tempList.push(transaction);
+          }
+          return transaction;
+        });
+        console.log(tempList);
+        setBooksList(tempList);
+      });
+  };
 
   const fetchTransactionsTable = async () => {
-    await axios.get("/books").then((res) => {
-      setBooksList(res.data.bookDetails);
-      console.log(res.data.bookDetails);
-    });
+    fetchBooksInPossessionList();
+    // await axios.get("/books").then((res) => {
+    //   setBooksList(res.data.bookDetails);
+    //   console.log(res.data.bookDetails);
+    // });
   };
 
   const openReturnDialog = () => {
     setBook(``);
-    setPayment(``)
+    setPayment(``);
     setBooksList([]);
     fetchTransactionsTable();
     setReturnDialoge(true);
@@ -69,7 +79,7 @@ const ReturnBook = ({ member }) => {
   const closeReturnDialog = () => {
     setReturnDialoge(false);
     setBook(``);
-    setPayment(``)
+    setPayment(``);
     setBooksList([]);
   };
 
@@ -78,12 +88,18 @@ const ReturnBook = ({ member }) => {
   //   }, []);
 
   const returnBook = async (bookID, memberID, payemnt) => {
-    await axios.post('/transactions/return-book',{
+    await axios
+      .post("/transactions/return-book", {
         book: bookID,
         member: memberID,
-        payment: payemnt
-      }).then(res=>{console.log(res); closeReturnDialog()}).then(()=>redirectToTransactions())
-  }
+        payment: payemnt,
+      })
+      .then((res) => {
+        console.log(res);
+        closeReturnDialog();
+      })
+      .then(() => redirectToTransactions());
+  };
 
   return (
     <div>
@@ -106,26 +122,32 @@ const ReturnBook = ({ member }) => {
         {booksList.length ? (
           <DialogContent>
             <FormControl className={classes.formControl}>
-              <InputLabel margin="dense">Book Name</InputLabel>
+              <InputLabel margin="dense">Book Name and Charge</InputLabel>
               <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={book}
-              onChange={(e)=>setBook(e.target.value)}
-            >
-             {booksList.map(books=><MenuItem value={books.book_id}>{books.book_name}</MenuItem>)}
-            </Select>
-            <TextField
-              value={payment}
-              onChange={(e) => setPayment(e.target.value)}
-              autoFocus
-              margin="dense"
-              name="payemnt"
-              id="payment"
-              label="Payment for the rent charged"
-              type="number"
-              fullWidth
-            />
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={book}
+                onChange={(e) => {
+                  setBook(e.target.value);
+                }}
+              >
+                {booksList.map((books) => (
+                  <MenuItem value={books.book_id} key={books.book_id}>
+                    {books.book_name} (Rent-{books.rent_price})
+                  </MenuItem>
+                ))}
+              </Select>
+              <TextField
+                value={payment}
+                onChange={(e) => setPayment(e.target.value)}
+                autoFocus
+                margin="dense"
+                name="payemnt"
+                id="payment"
+                label="Payment for the rent charged"
+                type="number"
+                fullWidth
+              />
             </FormControl>
           </DialogContent>
         ) : (
@@ -153,7 +175,12 @@ const ReturnBook = ({ member }) => {
           <Button onClick={() => closeReturnDialog()} color="primary">
             Cancel
           </Button>
-          <Button onClick={() => returnBook(book,member.member_id,parseInt(payment))} color="primary">
+          <Button
+            onClick={() =>
+              returnBook(book, member.member_id, parseInt(payment))
+            }
+            color="primary"
+          >
             Return
           </Button>
 

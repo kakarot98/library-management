@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request, redirect, jsonify
+import simplejson as json
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Nested
+from sqlalchemy.sql import func, Alias
+from sqlalchemy import case
 #to convert non serializable sql data to json easily without writing custom serializer
 import yaml
 import time
@@ -268,6 +271,26 @@ def delete_member(id):
         except:
             return jsonify({'error':'Database error, member not deleted'})
 
+
+
+@app.route('/members/<int:id>/books-in-possession', methods=['GET'])
+def getBooksInPossession(id):
+    if request.method == 'GET':
+        #transactions = Transactions.query.filter_by(member_id=id and func.sum(case((Transactions.transaction_type=='issue',1),else_=1)-case(Transactions.transaction_type=='return,1'),else_=0))
+        # valueWhenIssue = case([(Transactions.transaction_type=='issue', 1)], else_=0)
+        # valueWhenReturn = case([(Transactions.transaction_type=='return', 1)], else_=0)
+        r = db.engine.execute('SELECT t.book_id, SUM(CASE WHEN transaction_type = "issue" THEN 1 ELSE 0 END)-SUM(CASE WHEN transaction_type = "return" THEN 1 ELSE 0 END) AS balance,book_name,rent_price FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id WHERE member_id={} GROUP BY book_id'.format(id)).fetchall()
+        
+        result = []
+        for row_number, row in enumerate(r):
+            result.append({})
+            for column_number, value in enumerate(row):
+                result[row_number][row.keys()[column_number]] = value
+
+        
+        #print(result)
+        return jsonify({'transactions': result})
+        
 
 
 @app.route('/transactions', methods=['GET', 'POST'])

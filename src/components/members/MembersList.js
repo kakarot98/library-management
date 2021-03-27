@@ -10,8 +10,12 @@ import {
 } from "@material-ui/core";
 import axios from "axios";
 import Member from "./Member";
+import SearchBar from "material-ui-search-bar";
 
 const MembersList = ({ fetchMembersList, membersList }) => {
+  const [rows, setRows] = useState(membersList);
+  const [searchMemberValue, setSearchMemberValue] = useState("");
+
   const [list, setList] = useState([]);
 
   useEffect(() => {
@@ -41,8 +45,26 @@ const MembersList = ({ fetchMembersList, membersList }) => {
       });
   };
 
+  const requestSearchMember = (searchVal) => {
+    const filteredRows = list.filter(row=>{
+      return row.member_name.toLowerCase().includes(searchVal.toLowerCase())
+    })
+    setRows(filteredRows)
+  };
+
+  const cancelSearchMember = () => {
+    setSearchMemberValue("")
+    requestSearchMember(searchMemberValue)
+  };
+
   return list.length ? (
-    <div>
+    <Paper>
+      <SearchBar
+        placeholder="Search member..."
+        value={searchMemberValue}
+        onChange={(searchVal) => requestSearchMember(searchVal)}
+        onCancelSearch={() => cancelSearchMember()}
+      />
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -50,14 +72,16 @@ const MembersList = ({ fetchMembersList, membersList }) => {
               <TableCell align="center">Member Name</TableCell>
               <TableCell align="center">Outstanding Debt</TableCell>
               <TableCell align="center">Total Paid Till Date</TableCell>
-              <TableCell align="center">Books in Possession Currently</TableCell>
+              <TableCell align="center">
+                Books in Possession Currently
+              </TableCell>
               <TableCell align="center" colSpan={2}>
                 Actions
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {list.map((member) => (
+            {rows.map((member) => (
               <Member
                 member={member}
                 deleteMember={deleteMember}
@@ -68,7 +92,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </Paper>
   ) : (
     <h1>Loading ...</h1>
   );

@@ -6,21 +6,23 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Nested
 from sqlalchemy.sql import func, Alias
 from sqlalchemy import case
-#to convert non serializable sql data to json easily without writing custom serializer
+# to convert non serializable sql data to json easily without writing custom serializer
 import yaml
 import time
 
 app = Flask(__name__)
 
 
-#Mysql config
+# Mysql config
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/library'
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-#Object model for books
+# Object model for books
+
+
 class Books(db.Model):
     book_id = db.Column(db.Integer, primary_key=True)
     book_name = db.Column(db.String(30), nullable=False)
@@ -35,13 +37,13 @@ class Books(db.Model):
         return "<Book %r>", self.book_id
 
 
-#making schema to convert to json later
+# making schema to convert to json later
 class BooksSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Books
 
 
-#Object Model for Members
+# Object Model for Members
 class Members(db.Model):
     member_id = db.Column(db.Integer, primary_key=True)
     member_name = db.Column(db.String(30), nullable=False)
@@ -56,7 +58,7 @@ class MembersScehema(SQLAlchemyAutoSchema):
         model = Members
 
 
-#object model for all transactions
+# object model for all transactions
 class Transactions(db.Model):
     transaction_id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey('books.book_id'))
@@ -69,65 +71,68 @@ class Transactions(db.Model):
 class TransactionsSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Transactions
-        include_fk = True        
+        include_fk = True
     members = Nested(MembersScehema)
     books = Nested(BooksSchema)
-        
 
 
-#returns true if book is available to be issued
+# returns true if book is available to be issued
 def getAvailability(book):
     bookDetail = Books.query.get(book)
-    if bookDetail.stocks_left>=1:
+    if bookDetail.stocks_left >= 1:
         return True
-    elif bookDetail.issued<1:
+    elif bookDetail.issued < 1:
         return False
 
-#checks if the member has any book or not
+# checks if the member has any book or not
+
+
 def checkAnyBooksInPossession(member):
     memberDetail = Members.query.get(member)
-    if memberDetail.books_in_possession==0:
+    if memberDetail.books_in_possession == 0:
         return False
-    elif memberDetail.books_in_possession>=1:
+    elif memberDetail.books_in_possession >= 1:
         return True
 
-#checks if the outstanding deb to be paid is above 500
+# checks if the outstanding deb to be paid is above 500
+
+
 def checkOutstandingDebtLimitCrossed(member):
     memberDetail = Members.query.get(member)
-    if memberDetail.outstanding_debt<500:
+    if memberDetail.outstanding_debt < 500:
         return False
-    elif memberDetail.outstanding_debt>=500:
+    elif memberDetail.outstanding_debt >= 500:
         return True
 
 
-#First Page
+# First Page
 @app.route('/')
 def index():
     return render_template('index.html')
-    
 
 
-#List of Books with update and delete options
+# List of Books with update and delete options
 @app.route('/books', methods=['GET', 'POST'])
 def books():
-    if request.method=='GET':
+    if request.method == 'GET':
 
         bookDetails = Books.query.all()
         bookSchema = BooksSchema(many=True)
         bookDetails = bookSchema.dump(bookDetails)
         return jsonify({'bookDetails': bookDetails})
-    
-    if request.method=='POST':
+
+    if request.method == 'POST':
         frontEndData = request.get_json()
 
         # print(bookDetailsFromUI)
-        # return jsonify({'obj': bookDetailsFromUI})  
+        # return jsonify({'obj': bookDetailsFromUI})
 
-        bookName=frontEndData['bookName']        
-        authorName=frontEndData['authorName']
+        bookName = frontEndData['bookName']
+        authorName = frontEndData['authorName']
         rentPrice = int(frontEndData['rentPrice'])
         stocks = int(frontEndData['stocks'])
-        newBook = Books(book_name=bookName, author_name=authorName, rent_price=rentPrice, stocks_left=stocks)        
+        newBook = Books(book_name=bookName, author_name=authorName,
+                        rent_price=rentPrice, stocks_left=stocks)
         try:
             db.session.add(newBook)
             db.session.commit()
@@ -136,13 +141,13 @@ def books():
             bookDetails = bookSchema.dump(bookDetails)
             return jsonify({'bookDetails': bookDetails})
         except:
-            return jsonify({'error':'Error in book details or database'})
+            return jsonify({'error': 'Error in book details or database'})
 
 
-#deleting book
+# deleting book
 @app.route('/books/<int:id>/delete', methods=['DELETE'])
 def delete_book(id):
-    if request.method=='DELETE':
+    if request.method == 'DELETE':
         try:
             Books.query.filter_by(book_id=id).delete()
             db.session.commit()
@@ -151,21 +156,20 @@ def delete_book(id):
             bookDetails = bookSchema.dump(bookDetails)
             return jsonify({'bookDetails': bookDetails})
         except:
-            return jsonify({'error':'Error in deleting the book'})
+            return jsonify({'error': 'Error in deleting the book'})
 
 
-#updating the book details
-@app.route('/books/<int:id>/update', methods=['GET','POST'])
+# updating the book details
+@app.route('/books/<int:id>/update', methods=['GET', 'POST'])
 def update_book(id):
     book = Books.query.get_or_404(id)
 
-    if request.method=='GET':
+    if request.method == 'GET':
         bookSchema = BooksSchema()
         output = bookSchema.dump(book)
         return jsonify({'book': output})
-        
-    
-    if request.method=='POST':
+
+    if request.method == 'POST':
         bookDataFrontEnd = request.get_json()
         book.book_name = bookDataFrontEnd['bookName']
         book.author_name = bookDataFrontEnd['authorName']
@@ -178,42 +182,40 @@ def update_book(id):
             bookDetails = bookSchema.dump(bookDetails)
             return jsonify({'bookDetails': bookDetails})
         except:
-            return jsonify({'error':'Error in updating the book'})
+            return jsonify({'error': 'Error in updating the book'})
 
 
-#Check transactions of the particular book
+# Check transactions of the particular book
 @app.route('/books/<int:id>/transactions', methods=['GET'])
 def showBookTransactions(id):
-    if request.method=='GET':        
-        transactions = Transactions.query.filter(Transactions.book_id==id)
-        transactionsSchema=TransactionsSchema(many=True)
+    if request.method == 'GET':
+        transactions = Transactions.query.filter(Transactions.book_id == id)
+        transactionsSchema = TransactionsSchema(many=True)
         transactions = transactionsSchema.dump(transactions)
         length = 0
         # for transaction in transactions:
-        #     length = length+1    
+        #     length = length+1
         # print(length)
-        return jsonify({'transactions':transactions})
+        return jsonify({'transactions': transactions})
 
 
-
-
-#List of Members with update and delete options
+# List of Members with update and delete options
 @app.route('/members', methods=['GET', 'POST'])
 def members():
-    if request.method=='GET':
+    if request.method == 'GET':
 
         memberDetails = Members.query.all()
         membersSchema = MembersScehema(many=True)
         memberDetails = membersSchema.dump(memberDetails)
         return jsonify({'memberDetails': memberDetails})
-    
-    if request.method=='POST':
+
+    if request.method == 'POST':
         try:
             newMemberFrontEnd = request.get_json()
             newMemberName = newMemberFrontEnd['memberName']
             if not newMemberName:
                 return jsonify({'error': 'Name not entered properly'})
-        
+
             newMember = Members(member_name=newMemberName)
 
             db.session.add(newMember)
@@ -226,19 +228,19 @@ def members():
             return jsonify({'error': 'Database error'})
 
 
-#update members
-@app.route('/members/<int:id>/update', methods=['GET','POST'])
+# update members
+@app.route('/members/<int:id>/update', methods=['GET', 'POST'])
 def update_members(id):
-    
+
     member = Members.query.get_or_404(id)
 
-    if request.method=='GET':
+    if request.method == 'GET':
         return render_template('update-member.html', member=member)
-    
-    if request.method=='POST':
+
+    if request.method == 'POST':
         memberDataFrontEnd = request.get_json()
         if not memberDataFrontEnd:
-            return jsonify({'error':'Name not entered properly'})
+            return jsonify({'error': 'Name not entered properly'})
         member.member_name = memberDataFrontEnd['memberName']
         try:
             db.session.commit()
@@ -247,19 +249,19 @@ def update_members(id):
             memberDetails = membersSchema.dump(memberDetails)
             return jsonify({'memberDetails': memberDetails})
         except:
-            return jsonify({'error':'Error in updating'})
+            return jsonify({'error': 'Error in updating'})
 
 
-#deleting members
+# deleting members
 @app.route('/members/<int:id>/delete', methods=['DELETE'])
 def delete_member(id):
 
-    if request.method=='DELETE':
+    if request.method == 'DELETE':
         try:
             member = Members.query.get_or_404(id)
-            #should not be able to delete if there are any dues to be paid
-            if member.outstanding_debt>0:
-                return jsonify({'status':'outstanding debt remains'})
+            # should not be able to delete if there are any dues to be paid
+            if member.outstanding_debt > 0:
+                return jsonify({'status': 'outstanding debt remains'})
             else:
                 db.session.delete(member)
                 db.session.commit()
@@ -269,8 +271,7 @@ def delete_member(id):
                 memberDetails = memberSchema.dump(memberDetails)
                 return jsonify({'memberDetails': memberDetails})
         except:
-            return jsonify({'error':'Database error, member not deleted'})
-
+            return jsonify({'error': 'Database error, member not deleted'})
 
 
 @app.route('/members/<int:id>/books-in-possession', methods=['GET'])
@@ -280,17 +281,15 @@ def getBooksInPossession(id):
         # valueWhenIssue = case([(Transactions.transaction_type=='issue', 1)], else_=0)
         # valueWhenReturn = case([(Transactions.transaction_type=='return', 1)], else_=0)
         r = db.engine.execute('SELECT t.book_id, SUM(CASE WHEN transaction_type = "issue" THEN 1 ELSE 0 END)-SUM(CASE WHEN transaction_type = "return" THEN 1 ELSE 0 END) AS balance,book_name,rent_price FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id WHERE member_id={} GROUP BY book_id'.format(id)).fetchall()
-        
+
         result = []
         for row_number, row in enumerate(r):
             result.append({})
             for column_number, value in enumerate(row):
                 result[row_number][row.keys()[column_number]] = value
 
-        
-        #print(result)
+        # print(result)
         return jsonify({'transactions': result})
-        
 
 
 @app.route('/transactions', methods=['GET', 'POST'])
@@ -303,27 +302,27 @@ def transactions():
         books = booksSchema.dump(books)
 
         members = Members.query.all()
-        membersSchema=MembersScehema(many=True)
+        membersSchema = MembersScehema(many=True)
         members = membersSchema.dump(members)
 
-        transactions = Transactions.query.all()#.join(Members).join(Books).filter(Books.book_id==Transactions.book_id)
-        transactionsSchema=TransactionsSchema(many=True)
+        # .join(Members).join(Books).filter(Books.book_id==Transactions.book_id)
+        transactions = Transactions.query.all()
+        transactionsSchema = TransactionsSchema(many=True)
         transactions = transactionsSchema.dump(transactions)
 
-        return jsonify({'transactions': transactions, 'members':members, 'books': books}) 
+        return jsonify({'transactions': transactions, 'members': members, 'books': books})
 
 
-
-#issue book transaction
-@app.route('/transactions/issue-book', methods=['GET','POST'])
+# issue book transaction
+@app.route('/transactions/issue-book', methods=['GET', 'POST'])
 def issueBook():
-    if request.method=='GET':
+    if request.method == 'GET':
         books = Books.query.all()
         members = Members.query.all()
         transactions = Transactions.query.all()
-        return render_template('issue-book.html',books=books, members=members, transactions=transactions)
-    
-    if request.method=='POST':
+        return render_template('issue-book.html', books=books, members=members, transactions=transactions)
+
+    if request.method == 'POST':
         try:
             details = request.get_json()
             book_id = int(details['book'])
@@ -337,45 +336,45 @@ def issueBook():
                 book.issued = book.issued + 1
                 member.outstanding_debt = member.outstanding_debt + book.rent_price
                 member.books_in_possession = member.books_in_possession + 1
-                newTransaction = Transactions(book_id=book_id, member_id=member_id, transaction_type=transaction_type)
+                newTransaction = Transactions(
+                    book_id=book_id, member_id=member_id, transaction_type=transaction_type)
                 try:
                     db.session.add(newTransaction)
                     db.session.commit()
                     return jsonify({'message': 'database changed'})
                 except:
                     return jsonify({'message': 'error happened'})
-                
+
             elif not getAvailability(book_id):
                 return jsonify({'message': 'Book not available'})
 
             elif checkOutstandingDebtLimitCrossed(member_id):
                 return jsonify({'message': 'The user cannot be issued anymore books as the outstanding debt limit is crossed'})
         except:
-            return jsonify({'message':'not receiving data'})
-        #should not issue the book either if its out of stock or if the outstanding debt is above 500
+            return jsonify({'message': 'not receiving data'})
+        # should not issue the book either if its out of stock or if the outstanding debt is above 500
 
 
-
-#return book transaction
-@app.route('/transactions/return-book', methods=['GET','POST'])
+# return book transaction
+@app.route('/transactions/return-book', methods=['GET', 'POST'])
 def returnBook():
 
-    if request.method=='GET':
+    if request.method == 'GET':
         books = Books.query.all()
         members = Members.query.all()
         transactions = Transactions.query.all()
-        return render_template('return-book.html',books=books, members=members, transactions=transactions)
-    
-    if request.method=='POST':
+        return render_template('return-book.html', books=books, members=members, transactions=transactions)
+
+    if request.method == 'POST':
         details = request.get_json()
         book_id = int(details['book'])
         member_id = int(details['member'])
         payment = int(details['payment'])
         transaction_type = "return"
-        
-        #if the member has books_in_possession more than 0
+
+        # if the member has books_in_possession more than 0
         if checkAnyBooksInPossession(member_id):
-            #return the book
+            # return the book
             member = Members.query.get_or_404(member_id)
             book = Books.query.get_or_404(book_id)
             book.stocks_left = book.stocks_left + 1
@@ -383,25 +382,54 @@ def returnBook():
             member.outstanding_debt = member.outstanding_debt - payment
             member.total_paid = member.total_paid + payment
             member.books_in_possession = member.books_in_possession - 1
-            
-            newTransaction = Transactions(book_id=book_id, member_id=member_id, transaction_type=transaction_type)
+
+            newTransaction = Transactions(
+                book_id=book_id, member_id=member_id, transaction_type=transaction_type)
 
             try:
                 db.session.add(newTransaction)
                 db.session.commit()
-                return jsonify({'message':'database changed'})
+                return jsonify({'message': 'database changed'})
             except:
-                return jsonify({'message':'database NOT changed'})
+                return jsonify({'message': 'database NOT changed'})
 
-        #if the member has books_in_possesion as 0
+        # if the member has books_in_possesion as 0
         if not checkAnyBooksInPossession(member_id):
-            #do not retyrn any book
-            return jsonify({'message':'This member currently does not have any book in possession to be able to return'})
+            # do not retyrn any book
+            return jsonify({'message': 'This member currently does not have any book in possession to be able to return'})
+
+
+
+@app.route('/report', methods=['GET'])
+def report():
+    if request.method == 'GET':
+        transactions = Transactions.query.all()
+        transactionsSchema = TransactionsSchema(many=True)
+        transactions = transactionsSchema.dump(transactions)
+        
+        query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
+        query2 = db.engine.execute('SELECT b.book_id, b.book_name, COUNT(DISTINCT t.member_id) AS number_of_members FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY book_id ORDER BY number_of_members DESC').fetchall()
+
+        popularityByTotalRents = []
+        for row_number, row in enumerate(query1):
+            popularityByTotalRents.append({})
+            for column_number, value in enumerate(row):
+                popularityByTotalRents[row_number][row.keys()[column_number]] = value
+
+        popularityByDistinctRents = []
+        for row_number, row in enumerate(query2):
+            popularityByDistinctRents.append({})
+            for column_number, value in enumerate(row):
+                popularityByDistinctRents[row_number][row.keys()[column_number]] = value
 
         
+        return jsonify({'popularityByTotalRents': popularityByTotalRents, 'popularityByDistinctRents':popularityByDistinctRents})
 
 
-#Deleting all transactions
+
+
+
+# Deleting all transactions
 @app.route('/transactions/delete')
 def deleteAllTransactions():
     db.session.query(Transactions).delete()
@@ -409,7 +437,5 @@ def deleteAllTransactions():
     return redirect('/transactions')
 
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
     app.run(debug=True)
-    

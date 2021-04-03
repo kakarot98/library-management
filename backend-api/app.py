@@ -369,14 +369,16 @@ def returnBook():
         details = request.get_json()
         book_id = int(details['book'])
         member_id = int(details['member'])
-        payment = int(details['payment'])
+        #payment = int(details['payment'])
         transaction_type = "return"
+        
 
         # if the member has books_in_possession more than 0
         if checkAnyBooksInPossession(member_id):
             # return the book
             member = Members.query.get_or_404(member_id)
             book = Books.query.get_or_404(book_id)
+            payment = book.rent_price
             book.stocks_left = book.stocks_left + 1
             book.issued = book.issued - 1
             member.outstanding_debt = member.outstanding_debt - payment
@@ -407,23 +409,34 @@ def report():
         transactionsSchema = TransactionsSchema(many=True)
         transactions = transactionsSchema.dump(transactions)
         
+        #query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
+        query2 = db.engine.execute('SELECT b.book_id, b.book_name, COUNT(DISTINCT t.member_id) AS number_of_members,COUNT(t.transaction_type = "issue") AS popularity FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY book_id ORDER BY number_of_members DESC').fetchall()
         query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
-        query2 = db.engine.execute('SELECT b.book_id, b.book_name, COUNT(DISTINCT t.member_id) AS number_of_members FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY book_id ORDER BY number_of_members DESC').fetchall()
-
-        popularityByTotalRents = []
-        for row_number, row in enumerate(query1):
-            popularityByTotalRents.append({})
-            for column_number, value in enumerate(row):
-                popularityByTotalRents[row_number][row.keys()[column_number]] = value
-
-        popularityByDistinctRents = []
-        for row_number, row in enumerate(query2):
-            popularityByDistinctRents.append({})
-            for column_number, value in enumerate(row):
-                popularityByDistinctRents[row_number][row.keys()[column_number]] = value
-
         
-        return jsonify({'popularityByTotalRents': popularityByTotalRents, 'popularityByDistinctRents':popularityByDistinctRents})
+        query3 = db.engine.execute('SELECT * FROM members ORDER BY total_paid DESC').fetchall()
+
+        # popularityByTotalRents = []
+        # for row_number, row in enumerate(query1):
+        #     popularityByTotalRents.append({})
+        #     for column_number, value in enumerate(row):
+        #         popularityByTotalRents[row_number][row.keys()[column_number]] = value
+
+        bookRankingDetails = []
+        for row_number, row in enumerate(query2):
+            bookRankingDetails.append({})
+            for column_number, value in enumerate(row):
+                bookRankingDetails[row_number][row.keys()[column_number]] = value
+
+
+        memberRankingDetails = []
+        for row_number, row in enumerate(query3):
+            memberRankingDetails.append({})
+            for column_number, value in enumerate(row):
+                memberRankingDetails[row_number][row.keys()[column_number]] = value
+
+        return jsonify({ 'bookRankingDetails':bookRankingDetails, 'memberRankingDetails': memberRankingDetails})
+        
+        # return jsonify({'popularityByTotalRents': popularityByTotalRents, 'popularityByDistinctRents':popularityByDistinctRents})
 
 
 

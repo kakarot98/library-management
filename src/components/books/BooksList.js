@@ -22,7 +22,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
 
   const requestSearchByBookName = (searchVal) => {
     const filteredRows = list.filter((row) => {
-      return row.book_name.toLowerCase().includes(searchVal.toLowerCase());
+      return row.book_name.toLowerCase().includes(searchVal.toLowerCase()) || row.author_name.toLowerCase().includes(searchVal.toLowerCase());
     });
     setRows(filteredRows);
   };
@@ -32,17 +32,17 @@ const BooksList = ({ booksList, fetchBookList }) => {
     requestSearchByBookName(searchBookValue);
   };
 
-  const requestSearchByAuthorName = (searchVal) => {
-    const filteredRows = list.filter((row) => {
-      return row.author_name.toLowerCase().includes(searchVal.toLowerCase());
-    });
-    setRows(filteredRows);
-  };
+  // const requestSearchByAuthorName = (searchVal) => {
+  //   const filteredRows = list.filter((row) => {
+  //     return row.author_name.toLowerCase().includes(searchVal.toLowerCase());
+  //   });
+  //   setRows(filteredRows);
+  // };
 
-  const cancelSearchByAuthorName = () => {
-    setSearchAuthorValue("");
-    requestSearchByAuthorName(searchAuthorValue);
-  };
+  // const cancelSearchByAuthorName = () => {
+  //   setSearchAuthorValue("");
+  //   requestSearchByAuthorName(searchAuthorValue);
+  // };
 
   useEffect(() => {
     setList(booksList);
@@ -92,12 +92,12 @@ const BooksList = ({ booksList, fetchBookList }) => {
           <AddBook fetchBookList={fetchBookList} />
         </Grid>
       </Grid>
-      <SearchBar
+      {/* <SearchBar
         placeholder="Search by author name"
         value={searchAuthorValue}
         onChange={(searchVal) => requestSearchByAuthorName(searchVal)}
         onCancelSearch={() => cancelSearchByAuthorName()}
-      />
+      /> */}
 
       <TableContainer component={Paper}>
         <Table>

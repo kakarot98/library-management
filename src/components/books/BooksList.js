@@ -7,10 +7,12 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Grid,
 } from "@material-ui/core";
 import axios from "axios";
 import Book from "./Book";
 import SearchBar from "material-ui-search-bar";
+import AddBook from "./AddBook";
 
 const BooksList = ({ booksList, fetchBookList }) => {
   const [list, setList] = useState([]);
@@ -77,12 +79,19 @@ const BooksList = ({ booksList, fetchBookList }) => {
 
   return list.length ? (
     <Paper>
-      <SearchBar
-        placeholder="Search by book name"
-        value={searchBookValue}
-        onChange={(searchVal) => requestSearchByBookName(searchVal)}
-        onCancelSearch={() => cancelSearchByBookName()}
-      />
+      <Grid container spacing={3}>
+        <Grid item xs={8}>
+          <SearchBar
+            placeholder="Search by book name"
+            value={searchBookValue}
+            onChange={(searchVal) => requestSearchByBookName(searchVal)}
+            onCancelSearch={() => cancelSearchByBookName()}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <AddBook fetchBookList={fetchBookList} />
+        </Grid>
+      </Grid>
       <SearchBar
         placeholder="Search by author name"
         value={searchAuthorValue}

@@ -22,7 +22,7 @@ const Books = () => {
 
   return booksList.length ? (
     <div>
-      <AddBook fetchBookList={fetchBookList} />
+      {/* <AddBook fetchBookList={fetchBookList} /> */}
       <BookList booksList={booksList} fetchBookList={fetchBookList} />
     </div>
   ) : (

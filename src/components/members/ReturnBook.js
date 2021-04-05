@@ -11,7 +11,12 @@ import {
   MenuItem,
   Select,
   FormControl,
+  Checkbox,
+  FormControlLabel,
+  Snackbar,
+  IconButton,
 } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
@@ -41,7 +46,9 @@ const ReturnBook = ({ member }) => {
   const [returnDialog, setReturnDialoge] = useState(false);
   const [booksList, setBooksList] = useState([]);
   const [book, setBook] = useState(``);
-  const [payment, setPayment] = useState(``);
+  const [payment, setPayment] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
   const tempList = [];
 
   const fetchBooksInPossessionList = async (id) => {
@@ -57,7 +64,27 @@ const ReturnBook = ({ member }) => {
         });
         console.log(tempList);
         setBooksList(tempList);
+      })
+      .catch((err) => {
+        setErrMsg(err);
+        openAlert();
       });
+  };
+
+  const openAlert = () => {
+    setAlert(true);
+  };
+
+  const closeAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlert(false);
+    setErrMsg("");
+  };
+
+  const handleCheckChange = (event) => {
+    setPayment(event.target.checked);
   };
 
   const fetchTransactionsTable = async () => {
@@ -70,7 +97,7 @@ const ReturnBook = ({ member }) => {
 
   const openReturnDialog = () => {
     setBook(``);
-    setPayment(``);
+    setPayment(false);
     setBooksList([]);
     fetchTransactionsTable();
     setReturnDialoge(true);
@@ -79,7 +106,7 @@ const ReturnBook = ({ member }) => {
   const closeReturnDialog = () => {
     setReturnDialoge(false);
     setBook(``);
-    setPayment(``);
+    setPayment(false);
     setBooksList([]);
   };
 
@@ -88,11 +115,25 @@ const ReturnBook = ({ member }) => {
   //   }, []);
 
   const returnBook = async (bookID, memberID, payemnt) => {
+    if (!payment & !bookID) {
+      setErrMsg("Fill all the details");
+      openAlert();
+      return;
+    }
+    if (!payment) {
+      setErrMsg("Cannot Proceed Without Payment");
+      openAlert();
+      return;
+    }
+    if (!bookID) {
+      setErrMsg("Cannot Proceed Without Book Name");
+      openAlert();
+      return;
+    }
     await axios
       .post("/transactions/return-book", {
         book: bookID,
         member: memberID,
-        payment: payemnt,
       })
       .then((res) => {
         console.log(res);
@@ -137,7 +178,17 @@ const ReturnBook = ({ member }) => {
                   </MenuItem>
                 ))}
               </Select>
-              <TextField
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={payment}
+                    onChange={handleCheckChange}
+                    name="checknox"
+                  />
+                }
+                label="Rent Paid"
+              />
+              {/* <TextField
                 value={payment}
                 onChange={(e) => setPayment(e.target.value)}
                 autoFocus
@@ -147,7 +198,7 @@ const ReturnBook = ({ member }) => {
                 label="Payment for the rent charged"
                 type="number"
                 fullWidth
-              />
+              /> */}
             </FormControl>
           </DialogContent>
         ) : (
@@ -188,6 +239,28 @@ const ReturnBook = ({ member }) => {
            */}
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={alert}
+        autoHideDuration={3500}
+        onClose={closeAlert}
+        message={errMsg}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={closeAlert}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </div>
   );
 };

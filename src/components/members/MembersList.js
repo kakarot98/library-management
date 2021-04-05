@@ -7,7 +7,10 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Snackbar,
+  IconButton
 } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import axios from "axios";
 import Member from "./Member";
 import SearchBar from "material-ui-search-bar";
@@ -17,6 +20,21 @@ const MembersList = ({ fetchMembersList, membersList }) => {
   const [searchMemberValue, setSearchMemberValue] = useState("");
 
   const [list, setList] = useState([]);
+
+  const [alert, setAlert] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+
+  const openAlert = () => {
+    setAlert(true);
+  };
+
+  const closeAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlert(false);
+    setErrMsg("");
+  };
 
   useEffect(() => {
     setList(membersList);
@@ -29,7 +47,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
       fetchMembersList();
       // setList(res.data.memberDetails);
       console.log(res.data.memberDetails);
-    });
+    }).catch(err=> {setErrMsg(err); openAlert()})
     console.log(id);
   };
 
@@ -42,7 +60,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
       .then((res) => {
         console.log(res.data);
         fetchMembersList();
-      });
+      }).catch(err=> {setErrMsg(err); openAlert()})
   };
 
   const requestSearchMember = (searchVal) => {
@@ -92,6 +110,28 @@ const MembersList = ({ fetchMembersList, membersList }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Snackbar
+        open={alert}
+        autoHideDuration={3500}        
+        onClose={closeAlert}
+        message={errMsg}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={closeAlert}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </Paper>
   ) : (
     <h1>Loading ...</h1>

@@ -346,12 +346,12 @@ def issueBook():
                     return jsonify({'message': 'error happened'})
 
             elif not getAvailability(book_id):
-                return jsonify({'message': 'Book not available'})
+                return json.dumps({'error': 'Book not available'}), 400
 
             elif checkOutstandingDebtLimitCrossed(member_id):
-                return jsonify({'message': 'The user cannot be issued anymore books as the outstanding debt limit is crossed'})
+                return json.dumps({'error': 'The user cannot be issued anymore books as the outstanding debt limit is crossed'}), 400
         except:
-            return jsonify({'message': 'not receiving data'})
+            return json.dumps({'error': 'not receiving data'}), 400
         # should not issue the book either if its out of stock or if the outstanding debt is above 500
 
 

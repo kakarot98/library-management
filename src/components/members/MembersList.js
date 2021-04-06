@@ -6,14 +6,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Grid,
   Paper,
   Snackbar,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import axios from "axios";
 import Member from "./Member";
 import SearchBar from "material-ui-search-bar";
+import AddMember from "./AddMember";
 
 const MembersList = ({ fetchMembersList, membersList }) => {
   const [rows, setRows] = useState(membersList);
@@ -43,11 +45,17 @@ const MembersList = ({ fetchMembersList, membersList }) => {
 
   //function to delete the member
   const deleteMember = async (id) => {
-    await axios.delete(`/members/${id}/delete`).then((res) => {
-      fetchMembersList();
-      // setList(res.data.memberDetails);
-      console.log(res.data.memberDetails);
-    }).catch(err=> {setErrMsg(err); openAlert()})
+    await axios
+      .delete(`/members/${id}/delete`)
+      .then((res) => {
+        fetchMembersList();
+        // setList(res.data.memberDetails);
+        console.log(res.data.memberDetails);
+      })
+      .catch((err) => {
+        setErrMsg(err);
+        openAlert();
+      });
     console.log(id);
   };
 
@@ -60,29 +68,41 @@ const MembersList = ({ fetchMembersList, membersList }) => {
       .then((res) => {
         console.log(res.data);
         fetchMembersList();
-      }).catch(err=> {setErrMsg(err); openAlert()})
+      })
+      .catch((err) => {
+        setErrMsg(err);
+        openAlert();
+      });
   };
 
   const requestSearchMember = (searchVal) => {
-    const filteredRows = list.filter(row=>{
-      return row.member_name.toLowerCase().includes(searchVal.toLowerCase())
-    })
-    setRows(filteredRows)
+    const filteredRows = list.filter((row) => {
+      return row.member_name.toLowerCase().includes(searchVal.toLowerCase());
+    });
+    setRows(filteredRows);
   };
 
   const cancelSearchMember = () => {
-    setSearchMemberValue("")
-    requestSearchMember(searchMemberValue)
+    setSearchMemberValue("");
+    requestSearchMember(searchMemberValue);
   };
 
   return list.length ? (
     <Paper>
-      <SearchBar
-        placeholder="Search member..."
-        value={searchMemberValue}
-        onChange={(searchVal) => requestSearchMember(searchVal)}
-        onCancelSearch={() => cancelSearchMember()}
-      />
+      <Grid container spacing={3}>
+        <Grid item xs={8}>
+          <SearchBar
+            placeholder="Search member..."
+            value={searchMemberValue}
+            onChange={(searchVal) => requestSearchMember(searchVal)}
+            onCancelSearch={() => cancelSearchMember()}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <AddMember fetchMembersList={fetchMembersList} />
+        </Grid>
+      </Grid>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -112,7 +132,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
       </TableContainer>
       <Snackbar
         open={alert}
-        autoHideDuration={3500}        
+        autoHideDuration={3500}
         onClose={closeAlert}
         message={errMsg}
         anchorOrigin={{
@@ -134,7 +154,31 @@ const MembersList = ({ fetchMembersList, membersList }) => {
       />
     </Paper>
   ) : (
-    <h1>Loading ...</h1>
+    <div>
+      <h1>Loading ...</h1>
+      <Snackbar
+        open={alert}
+        autoHideDuration={3500}
+        onClose={closeAlert}
+        message={errMsg}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={closeAlert}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
+    </div>
   );
 };
 

@@ -6,7 +6,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Snackbar,
+  IconButton,
 } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import axios from "axios";
 
@@ -17,6 +20,24 @@ const AddBook = ({ fetchBookList }) => {
   const [authorName, setAuthorName] = useState("");
   const [rentPrice, setRentPrice] = useState(60);
   const [stocks, setStocks] = useState(1);
+
+
+  const [alert, setAlert] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+
+  const openAlert = () => {
+    setAlert(true);
+  };
+
+  const closeAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlert(false);
+    setErrMsg("");
+  };
+
+
 
   const openAddBookDialog = () => {
     setAddBookDialog(true);
@@ -31,6 +52,15 @@ const AddBook = ({ fetchBookList }) => {
   };
 
   const addBook = async (bname, aname, rprice, stocks) => {
+
+    if(!bname || !aname || !rprice || !stocks){
+      setErrMsg('Need to all details to be filled and not empty')
+      openAlert()
+      return
+    }
+
+
+
     await axios
       .post("/books", {
         bookName: bname,
@@ -42,6 +72,9 @@ const AddBook = ({ fetchBookList }) => {
         console.log(res);
         fetchBookList();
         closeAddBookDialog();
+      }).catch((err) => {
+        setErrMsg(err);
+        openAlert();
       });
   };
 
@@ -118,6 +151,28 @@ const AddBook = ({ fetchBookList }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={alert}
+        autoHideDuration={3500}
+        onClose={closeAlert}
+        message={errMsg}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={closeAlert}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </div>
   );
 };

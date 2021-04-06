@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Bar, HorizontalBar, Doughnut } from "react-chartjs-2";
+import { Bar, HorizontalBar, Doughnut, Pie } from "react-chartjs-2";
 import {
   Card,
   Paper,
   CardContent,
   Typography,
   Grid,
-  rgbToHex,
+  Snackbar,
+  IconButton,
 } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
-
+import CloseIcon from "@material-ui/icons/Close";
+import { makeStyles } from "@material-ui/core/styles";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(10),
-    textAlign: 'center',
+    textAlign: "center",
     color: theme.palette.text.secondary,
   },
   control: {
@@ -27,19 +28,31 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     minWidth: 275,
-  }
+  },
 }));
 
-
-
 const HomePage = () => {
-
   const classes = useStyles();
 
   const [bookName1, setBookName1] = useState([]);
   const [membersRentedChartData, setMembersRentedChartData] = useState({});
   const [totalIssueChartData, setTotalIssueChartData] = useState({});
   const [mostPaidChartData, setMostPaidChartData] = useState({});
+
+  const [alert, setAlert] = useState(false);
+  const [errMsg, setErrMsg] = useState(``);
+
+  const openAlert = () => {
+    setAlert(true);
+  };
+
+  const closeAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlert(false);
+    setErrMsg("");
+  };
 
   //to generate a random color
   const colorGenerate = () => {
@@ -70,7 +83,7 @@ const HomePage = () => {
         }
 
         for (const dataObj of res.data.bookRankingDetails) {
-          if (dataObj.popularity == 0) {
+          if (parseInt(dataObj.popularity) === 0) {
             continue;
           }
           totalRents.push(parseInt(dataObj.popularity));
@@ -79,7 +92,7 @@ const HomePage = () => {
         }
 
         for (const dataObj2 of res.data.memberRankingDetails) {
-          if (parseInt(dataObj2.total_paid) == 0) {
+          if (parseInt(dataObj2.total_paid) === 0) {
             continue;
           }
           membersPayment.push(dataObj2.total_paid);
@@ -129,7 +142,10 @@ const HomePage = () => {
           ],
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setErrMsg(err);
+        openAlert();
+      });
   };
 
   useEffect(() => {
@@ -140,24 +156,27 @@ const HomePage = () => {
     <div>
       <Card className={classes.card} elevation={3}>
         <CardContent>
-        <Doughnut data={totalIssueChartData} height={75} />
+          <Pie data={totalIssueChartData} height={75} />
         </CardContent>
       </Card>
-      <Grid container >
+      <Grid container>
         <Grid item md={6}>
           <Paper className={classes.paper} elevation={3}>
-          <Bar
-          height={300}
-            data={membersRentedChartData}
-            options={{
-              responsive: true,
-              title: { text: "Popularity by number of members", display: true },
-              maintainAspectRatio:false
-            }}
-          />
+            <Bar
+              height={300}
+              data={membersRentedChartData}
+              options={{
+                responsive: true,
+                title: {
+                  text: "Popularity by number of members",
+                  display: true,
+                },
+                maintainAspectRatio: false,
+              }}
+            />
           </Paper>
         </Grid>
-        
+
         {/* <HorizontalBar data={totalIssueChartData} options={{
         responsive: true,
         title: {text: 'Popularity by total rents', display:true},  
@@ -172,27 +191,49 @@ const HomePage = () => {
 
         <Grid item md={6}>
           <Paper className={classes.paper} elevation={3}>
-          <Bar
-            data={mostPaidChartData}
-            height={300}
-            options={{
-              maintainAspectRatio:false,
-              responsive: true,
-              title: { text: "Most paid to the library", display: true },
-              scales: {
-                xAxes: [
-                  {
-                    ticks: {
-                      beginAtZero: true,
+            <Bar
+              data={mostPaidChartData}
+              height={300}
+              options={{
+                maintainAspectRatio: false,
+                responsive: true,
+                title: { text: "Most paid to the library", display: true },
+                scales: {
+                  xAxes: [
+                    {
+                      ticks: {
+                        beginAtZero: true,
+                      },
                     },
-                  },
-                ],
-              },
-            }}
-          />
+                  ],
+                },
+              }}
+            />
           </Paper>
         </Grid>
       </Grid>
+      <Snackbar
+        open={alert}
+        autoHideDuration={3500}
+        onClose={closeAlert}
+        message={errMsg}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={closeAlert}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </div>
   );
 };

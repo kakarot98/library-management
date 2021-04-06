@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import MembersList from "./MembersList";
-import AddMember from "./AddMember";
+
 
 const Members = () => {
   const [membersList, setMembersList] = useState([]); //used to store member details
@@ -22,7 +22,7 @@ const Members = () => {
 
   return membersList.length ? (
     <div>
-      <AddMember fetchMembersList={fetchMembersList} />
+      {/* <AddMember fetchMembersList={fetchMembersList} /> */}
       <MembersList
         fetchMembersList={fetchMembersList}
         membersList={membersList}

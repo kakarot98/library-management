@@ -8,7 +8,10 @@ import {
   TableRow,
   Paper,
   Grid,
+  Snackbar,
+  IconButton,
 } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
 import axios from "axios";
 import Book from "./Book";
 import SearchBar from "material-ui-search-bar";
@@ -19,11 +22,32 @@ const BooksList = ({ booksList, fetchBookList }) => {
   const [searchBookValue, setSearchBookValue] = useState("");
   const [searchAuthorValue, setSearchAuthorValue] = useState("");
   const [rows, setRows] = useState(booksList);
+  const [alert, setAlert] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+
+  const openAlert = () => {
+    setAlert(true);
+  };
+
+  const closeAlert = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlert(false);
+    setErrMsg("");
+  };
 
   const requestSearchByBookName = (searchVal) => {
     const filteredRows = list.filter((row) => {
-      return row.book_name.toLowerCase().includes(searchVal.toLowerCase()) || row.author_name.toLowerCase().includes(searchVal.toLowerCase());
+      return (
+        row.book_name.toLowerCase().includes(searchVal.toLowerCase()) ||
+        row.author_name.toLowerCase().includes(searchVal.toLowerCase())
+      );
     });
+    if (filteredRows.length === 0) {
+      setErrMsg('No results found')
+      openAlert()
+    }
     setRows(filteredRows);
   };
 
@@ -125,9 +149,55 @@ const BooksList = ({ booksList, fetchBookList }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Snackbar
+        open={alert}
+        autoHideDuration={3500}
+        onClose={closeAlert}
+        message={errMsg}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={closeAlert}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </Paper>
   ) : (
-    <h2>Loading</h2>
+    <div>
+      <h2>Loading</h2>
+      <Snackbar
+        open={alert}
+        autoHideDuration={3500}
+        onClose={closeAlert}
+        message={errMsg}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        action={
+          <React.Fragment>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={closeAlert}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
-#Library Management System
-###This app is made only for the admin of the library to manage the members and books of the library
+# Library Management System
+### This app is made only for the admin of the library to manage the members and books of the library
 Admin can add books and other details about the book such as its Author Name and the price for its
 rent. The admin can delete or update the information of these books. Same can be done with its members
 The admin can keep track of the number of books currently in circulation and books left in stock.
@@ -10,7 +10,7 @@ shows reports of most popular books and highest paying members. The transactions
 all the transactions and can be referred when needed.
 
 
-##Technology Stack
+## Technology Stack
 - MySQL for backend (use SQLite when deploying)
 - Flask API in backend, flask-sqlalchemy and marshmallow to connect MySQL DB and backend
 - ReactJS for frontend, Material-UI components for theme

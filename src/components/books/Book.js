@@ -37,7 +37,7 @@ const Book = ({ book, deleteBook, updateBook }) => {
   const [tempStocks, setTempStocks] = useState(book.stocks_left);
   const [updateBookDialog, setUpdateBookDialog] = useState(false);
 
-  let history = useHistory();
+  
   const redirectBookTransaction = () => {
     // history.push(`/books/${bookDetails.book_id}/transactions`);
 

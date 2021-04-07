@@ -22,7 +22,6 @@ ma = Marshmallow(app)
 
 # Object model for books
 
-
 class Books(db.Model):
     book_id = db.Column(db.Integer, primary_key=True)
     book_name = db.Column(db.String(30), nullable=False)
@@ -410,7 +409,7 @@ def report():
         transactions = transactionsSchema.dump(transactions)
         
         #query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
-        query2 = db.engine.execute('SELECT b.book_id, b.book_name, COUNT(DISTINCT t.member_id) AS number_of_members,COUNT(t.transaction_type = "issue") AS popularity FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY book_id ORDER BY number_of_members DESC').fetchall()
+        query2 = db.engine.execute('SELECT b.book_id, b.book_name,b.stocks_left,(b.stocks_left+b.issued) AS total, COUNT(DISTINCT t.member_id) AS number_of_members,COUNT(t.transaction_type = "issue") AS popularity FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY book_id ORDER BY number_of_members DESC').fetchall()
         query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
         
         query3 = db.engine.execute('SELECT * FROM members ORDER BY total_paid DESC').fetchall()

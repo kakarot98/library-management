@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { AppBar, Tabs, Tab, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -11,6 +11,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flex: 1,
     justifyContent: "space-evenly",
+    fontWeight: "normal",
+    color: "rgb(255,255,255)",
   },
 }));
 
@@ -19,19 +21,36 @@ const Navbar = () => {
 
   return (
     <div>
-      <AppBar position="static" color="secondary">
+      <AppBar position="static" style={{ backgroundColor: "#2c2f30" }}>
         <Toolbar>
-          <Typography variant="h5" className={classes.title}>
-            <Link to="/">Library Management</Link>
+          <Typography variant="h4" className={classes.title} color="secondary">
+            <Link to="/" style={{ textDecoration: "none", color: "#dceff5" }}>
+              Home
+            </Link>
+          </Typography>
+          <Typography variant="h6" className={classes.title}>
+            <Link
+              to="/books"
+              style={{ textDecoration: "none", color: "#dceff5" }}
+            >
+              Books List
+            </Link>
+          </Typography>
+          <Typography variant="h6" className={classes.title}>
+            <Link
+              to="/members"
+              style={{ textDecoration: "none", color: "#dceff5" }}
+            >
+              Members List
+            </Link>
           </Typography>
           <Typography variant="subtitle1" className={classes.title}>
-            <Link to="/books">Books List</Link>
-          </Typography>
-          <Typography variant="subtitle1" className={classes.title}>
-            <Link to="/members">Members List</Link>
-          </Typography>
-          <Typography variant="subtitle1" className={classes.title}>
-            <Link to="/transactions">All Transactions</Link>
+            <Link
+              to="/transactions"
+              style={{ textDecoration: "none", color: "#dceff5" }}
+            >
+              All Transactions
+            </Link>
           </Typography>
         </Toolbar>
       </AppBar>

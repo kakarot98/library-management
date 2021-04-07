@@ -13,13 +13,12 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
   paper: {
-    padding: theme.spacing(10),
+    padding: theme.spacing(6),
     textAlign: "center",
     color: theme.palette.text.secondary,
   },
@@ -34,11 +33,9 @@ const useStyles = makeStyles((theme) => ({
 const HomePage = () => {
   const classes = useStyles();
 
-  const [bookName1, setBookName1] = useState([]);
+  const [quantityChartData, setQuantityChartData] = useState({});
   const [membersRentedChartData, setMembersRentedChartData] = useState({});
-  const [totalIssueChartData, setTotalIssueChartData] = useState({});
   const [mostPaidChartData, setMostPaidChartData] = useState({});
-
   const [alert, setAlert] = useState(false);
   const [errMsg, setErrMsg] = useState(``);
 
@@ -64,11 +61,14 @@ const HomePage = () => {
   };
 
   const fetchDistinctMemberChartData = () => {
-    let bookName = [];
+    let bookNameForPieChart = [];
     let numberOfMembers = [];
+
+    let bookNameForQuantChart = [];
+    let totalQuant = [];
+    let quantLeftInLib = [];
+
     let colors = [];
-    let bookName2 = [];
-    let totalRents = [];
 
     let membersWhoPaid = [];
     let membersPayment = [];
@@ -78,16 +78,17 @@ const HomePage = () => {
       .then((res) => {
         console.log(res.data);
         for (const dataObj of res.data.bookRankingDetails) {
-          bookName.push(dataObj.book_name);
-          numberOfMembers.push(parseInt(dataObj.number_of_members));
+          bookNameForQuantChart.push(dataObj.book_name);
+          totalQuant.push(parseInt(dataObj.total));
+          quantLeftInLib.push(parseInt(dataObj.stocks_left));
         }
 
         for (const dataObj of res.data.bookRankingDetails) {
-          if (parseInt(dataObj.popularity) === 0) {
+          if (parseInt(dataObj.number_of_members) === 0) {
             continue;
           }
-          totalRents.push(parseInt(dataObj.popularity));
-          bookName2.push(dataObj.book_name);
+          bookNameForPieChart.push(dataObj.book_name);
+          numberOfMembers.push(parseInt(dataObj.number_of_members));
           colors.push(colorGenerate());
         }
 
@@ -99,33 +100,32 @@ const HomePage = () => {
           membersWhoPaid.push(dataObj2.member_name);
         }
 
-        console.log(totalRents, bookName2);
+        // console.log(totalRents, bookName2);
+
         setMembersRentedChartData({
-          labels: bookName,
+          labels: bookNameForPieChart,
           datasets: [
             {
               label: "Number of Members who rented",
               data: numberOfMembers,
-              borderWidth: 4,
-              backgroundColor: "rgba(230, 46, 30)",
-            },
-            {
-              label: "Total issues",
-              data: totalRents,
-              borderWidth: 4,
-              backgroundColor: "rgba(52, 138, 237)",
+              borderWidth: 0.5,
+              backgroundColor: colors,
             },
           ],
         });
 
-        setTotalIssueChartData({
-          labels: bookName2,
+        setQuantityChartData({
+          labels: bookNameForQuantChart,
           datasets: [
             {
-              label: "Total issues",
-              data: totalRents,
-              borderWidth: 4,
-              backgroundColor: colors, //'rgba(52, 138, 237)',
+              label: "Total quantity",
+              data: totalQuant,
+              backgroundColor: "rgb(217, 53, 48)",
+            },
+            {
+              label: "Quantity left in library",
+              data: quantLeftInLib,
+              backgroundColor: "rgb(42, 107, 219)",
             },
           ],
         });
@@ -136,7 +136,7 @@ const HomePage = () => {
             {
               label: "Total to the library",
               data: membersPayment,
-              borderWidth: 4,
+              borderWidth: 1,
               backgroundColor: "rgba(52, 138, 237)",
             },
           ],
@@ -156,19 +156,29 @@ const HomePage = () => {
     <div>
       <Card className={classes.card} elevation={3}>
         <CardContent>
-          <Pie data={totalIssueChartData} height={75} />
+          <Pie
+            data={membersRentedChartData}
+            height={75}
+            options={{
+              responsive: true,
+              title: {
+                text: "Popularity by members who rented",
+                display: true,
+              },
+            }}
+          />
         </CardContent>
       </Card>
       <Grid container>
         <Grid item md={6}>
           <Paper className={classes.paper} elevation={3}>
             <Bar
-              height={300}
-              data={membersRentedChartData}
+              height={500}
+              data={quantityChartData}
               options={{
                 responsive: true,
                 title: {
-                  text: "Popularity by number of members",
+                  text: "Quantity of books",
                   display: true,
                 },
                 maintainAspectRatio: false,
@@ -177,23 +187,11 @@ const HomePage = () => {
           </Paper>
         </Grid>
 
-        {/* <HorizontalBar data={totalIssueChartData} options={{
-        responsive: true,
-        title: {text: 'Popularity by total rents', display:true},  
-        scales: {
-          xAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
-          }]
-        }     
-      }}/> */}
-
         <Grid item md={6}>
           <Paper className={classes.paper} elevation={3}>
             <Bar
               data={mostPaidChartData}
-              height={300}
+              height={500}
               options={{
                 maintainAspectRatio: false,
                 responsive: true,

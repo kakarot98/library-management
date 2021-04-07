@@ -20,7 +20,6 @@ import AddBook from "./AddBook";
 const BooksList = ({ booksList, fetchBookList }) => {
   const [list, setList] = useState([]);
   const [searchBookValue, setSearchBookValue] = useState("");
-  const [searchAuthorValue, setSearchAuthorValue] = useState("");
   const [rows, setRows] = useState(booksList);
   const [alert, setAlert] = useState(false);
   const [errMsg, setErrMsg] = useState("");

@@ -6,12 +6,14 @@ import {
   Paper,
   CardContent,
   Typography,
+  Button,
   Grid,
   Snackbar,
   IconButton,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
+import { saveAs } from 'file-saver'; 
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -148,6 +150,19 @@ const HomePage = () => {
       });
   };
 
+
+
+  const savCanvas = ()=>{
+    //save to png
+    const canvasSave = document.getElementById('chart')
+    canvasSave.toBlob(function (blob){
+      saveAs(blob, "testing.png")
+    })
+  }
+
+
+
+
   useEffect(() => {
     fetchDistinctMemberChartData();
   }, []);
@@ -157,6 +172,8 @@ const HomePage = () => {
       <Card className={classes.card} elevation={3}>
         <CardContent>
           <Pie
+          className="Pie"
+          
             data={membersRentedChartData}
             height={75}
             options={{
@@ -167,15 +184,26 @@ const HomePage = () => {
               },
             }}
           />
+          <Button onClick={savCanvas} ><Typography>Download</Typography></Button>
         </CardContent>
       </Card>
       <Grid container>
         <Grid item md={6}>
           <Paper className={classes.paper} elevation={3}>
             <Bar
+            id="chart"
               height={500}
               data={quantityChartData}
               options={{
+                scales: {
+                  yAxes: [
+                    {
+                      ticks: {
+                        beginAtZero: true,
+                      },
+                    },
+                  ],
+                },
                 responsive: true,
                 title: {
                   text: "Quantity of books",

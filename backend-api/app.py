@@ -15,7 +15,8 @@ app = Flask(__name__)
 
 # Mysql config
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/library'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/library'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library.db'
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -279,7 +280,7 @@ def getBooksInPossession(id):
         #transactions = Transactions.query.filter_by(member_id=id and func.sum(case((Transactions.transaction_type=='issue',1),else_=1)-case(Transactions.transaction_type=='return,1'),else_=0))
         # valueWhenIssue = case([(Transactions.transaction_type=='issue', 1)], else_=0)
         # valueWhenReturn = case([(Transactions.transaction_type=='return', 1)], else_=0)
-        r = db.engine.execute('SELECT t.book_id, SUM(CASE WHEN transaction_type = "issue" THEN 1 ELSE 0 END)-SUM(CASE WHEN transaction_type = "return" THEN 1 ELSE 0 END) AS balance,book_name,rent_price FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id WHERE member_id={} GROUP BY book_id'.format(id)).fetchall()
+        r = db.engine.execute('SELECT t.book_id, SUM(CASE WHEN transaction_type = "issue" THEN 1 ELSE 0 END)-SUM(CASE WHEN transaction_type = "return" THEN 1 ELSE 0 END) AS balance,book_name,rent_price FROM transactions t INNER JOIN books b ON t.book_id = b.book_id WHERE member_id={} GROUP BY b.book_id'.format(id)).fetchall()
 
         result = []
         for row_number, row in enumerate(r):
@@ -409,8 +410,8 @@ def report():
         transactions = transactionsSchema.dump(transactions)
         
         #query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
-        query2 = db.engine.execute('SELECT b.book_id, b.book_name,b.stocks_left,(b.stocks_left+b.issued) AS total, COUNT(DISTINCT t.member_id) AS number_of_members,COUNT(t.transaction_type = "issue") AS popularity FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY book_id ORDER BY number_of_members DESC').fetchall()
-        query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
+        query2 = db.engine.execute('SELECT b.book_id, b.book_name,b.stocks_left,(b.stocks_left+b.issued) AS total, COUNT(DISTINCT t.member_id) AS number_of_members,COUNT(t.transaction_type = "issue") AS popularity FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY b.book_id ORDER BY number_of_members DESC').fetchall()
+        query1 = db.engine.execute('SELECT t.book_id, b.book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN books b ON t.book_id = b.book_id GROUP BY b.book_id ORDER BY popularity DESC').fetchall()
         
         query3 = db.engine.execute('SELECT * FROM members ORDER BY total_paid DESC').fetchall()
 

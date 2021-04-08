@@ -17,7 +17,7 @@ const Transactions = () => {
 
   useEffect(() => {
       const fetchTransactions = async () => {
-          await axios.get('/transactions').then(res=>{console.log(res.data.transactions); setTransactions(res.data.transactions)})
+          await axios.get('/transactions').then(res=>{ setTransactions(res.data.transactions)})
       }
       fetchTransactions()
 
@@ -34,7 +34,7 @@ const Transactions = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {transactions.map((transaction) => (<TableRow>
+        {transactions.map((transaction) => (<TableRow key={transaction.transaction_id}>
             <TableCell>{transaction.books.book_name}</TableCell>
             <TableCell>{transaction.members.member_name}</TableCell>
             <TableCell>{transaction.transaction_type}</TableCell>

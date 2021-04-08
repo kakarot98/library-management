@@ -35,9 +35,14 @@ const IssueBook = ({ bookDetails }) => {
     history.push("/transactions");
   };
 
-  const [stocksLeft, setStocksLeft] = useState(bookDetails.stocks);
+  const stocksLeft = bookDetails.stocks_left
+  //const [stocksLeft, setStocksLeft] = useState(bookDetails.stocks);
+
   const [issueDialog, setIssueDialoge] = useState(false);
-  const [bookName, setBookName] = useState(bookDetails.book_name);
+
+  const bookName = bookDetails.book_name
+  // const [bookName, setBookName] = useState(bookDetails.book_name);
+
   const [memberName, setMemberName] = useState(``);
   const [membersList, setMembersList] = useState([]);
   const [alert, setAlert] = useState(false);
@@ -60,7 +65,7 @@ const IssueBook = ({ bookDetails }) => {
       .get("/members")
       .then((res) => {
         setMembersList(res.data.memberDetails);
-        console.log(res.data.memberDetails);
+        // console.log(res.data.memberDetails);
       })
       .catch((err) => {
         setErrMsg(err);
@@ -101,12 +106,12 @@ const IssueBook = ({ bookDetails }) => {
         member: memberID,
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         closeIssueDialog();
       })
       .then(() => redirectToTransactions())
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
         setErrMsg(
           `${err} - This happened because the member has debt above Rs.500`
         );
@@ -117,7 +122,7 @@ const IssueBook = ({ bookDetails }) => {
   return (
     <div>
       <Button
-        disabled={stocksLeft}
+        disabled={stocksLeft ? false:true}
         onClick={() => {
           openIssueDialog();
         }}

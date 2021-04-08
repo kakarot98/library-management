@@ -40,7 +40,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
 
   useEffect(() => {
     setList(membersList);
-    console.log(membersList);
+    // console.log(membersList);
   }, []);
 
   //function to delete the member
@@ -50,13 +50,13 @@ const MembersList = ({ fetchMembersList, membersList }) => {
       .then((res) => {
         fetchMembersList();
         // setList(res.data.memberDetails);
-        console.log(res.data.memberDetails);
+        // console.log(res.data.memberDetails);
       })
       .catch((err) => {
         setErrMsg(err);
         openAlert();
       });
-    console.log(id);
+    // console.log(id);
   };
 
   //update member function
@@ -66,7 +66,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
         memberName: mname,
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         fetchMembersList();
       })
       .catch((err) => {
@@ -88,7 +88,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
   };
 
   return list.length ? (
-    <Paper>
+    <div>
       <Grid container spacing={3}>
         <Grid item xs={8}>
           <SearchBar
@@ -152,7 +152,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
           </React.Fragment>
         }
       />
-    </Paper>
+    </div>
   ) : (
     <div>
       <h1>Loading ...</h1>

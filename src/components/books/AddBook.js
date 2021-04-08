@@ -8,9 +8,11 @@ import {
   DialogTitle,
   Snackbar,
   IconButton,
+  Typography,
+  Box
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import axios from "axios";
 
 const AddBook = ({ fetchBookList }) => {
@@ -20,7 +22,6 @@ const AddBook = ({ fetchBookList }) => {
   const [authorName, setAuthorName] = useState("");
   const [rentPrice, setRentPrice] = useState(60);
   const [stocks, setStocks] = useState(1);
-
 
   const [alert, setAlert] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -37,8 +38,6 @@ const AddBook = ({ fetchBookList }) => {
     setErrMsg("");
   };
 
-
-
   const openAddBookDialog = () => {
     setAddBookDialog(true);
   };
@@ -52,14 +51,17 @@ const AddBook = ({ fetchBookList }) => {
   };
 
   const addBook = async (bname, aname, rprice, stocks) => {
-
-    if(!bname || !aname || !rprice || !stocks){
-      setErrMsg('Need to all details to be filled and not empty')
-      openAlert()
-      return
+    if (!bname || !aname || !rprice || !stocks) {
+      setErrMsg("Need to all details to be filled and not empty");
+      openAlert();
+      return;
     }
-
-
+    if (rprice === 0) {
+      rprice = 60;
+    }
+    if (stocks === 0) {
+      stocks = 1;
+    }
 
     await axios
       .post("/books", {
@@ -69,10 +71,11 @@ const AddBook = ({ fetchBookList }) => {
         stocks: stocks,
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         fetchBookList();
         closeAddBookDialog();
-      }).catch((err) => {
+      })
+      .catch((err) => {
         setErrMsg(err);
         openAlert();
       });
@@ -80,8 +83,14 @@ const AddBook = ({ fetchBookList }) => {
 
   return (
     <div>
-      <Button variant="contained" onClick={() => openAddBookDialog()} startIcon={<AddCircleIcon/>}>
+      <Button
+        variant="contained"
+        onClick={() => openAddBookDialog()}
+        startIcon={<AddCircleIcon />}
+        style={{backgroundColor:"#aec9f5"}}
+      ><Typography variant="subtitle1" style={{fontWeight:"bold"}}>
         Add New Book
+        </Typography>
       </Button>
       <Dialog
         open={addBookDialog}
@@ -119,10 +128,9 @@ const AddBook = ({ fetchBookList }) => {
             margin="dense"
             name="rentPrice"
             id="rentPrice"
-            label="Price for rent"
+            label="Price for rent (Default will be 60)"
             type="number"
             fullWidth
-            defaultValue="60"
           />
           <TextField
             value={stocks}
@@ -134,7 +142,6 @@ const AddBook = ({ fetchBookList }) => {
             label="Number of books to add"
             type="number"
             fullWidth
-            defaultValue="1"
           />
         </DialogContent>
         <DialogActions>

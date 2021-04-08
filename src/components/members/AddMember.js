@@ -7,7 +7,8 @@ import {
   DialogContent,
   DialogTitle,
   Snackbar,
-  IconButton
+  IconButton,
+  Typography
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -58,7 +59,7 @@ const AddMember = ({ fetchMembersList }) => {
         memberName: mname,
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         fetchMembersList();
         closeAddMemberDialog();
       }).catch((err) => {
@@ -70,8 +71,8 @@ const AddMember = ({ fetchMembersList }) => {
 
   return (
     <div>
-      <Button variant="contained" onClick={() => openAddMemberDialog()} startIcon={<AddCircleIcon/>}>
-        Add New Member
+      <Button variant="contained" onClick={() => openAddMemberDialog()} startIcon={<AddCircleIcon/>} style={{backgroundColor:"#e9f57a"}}>
+        <Typography variant="subtitle1" style={{fontWeight:"bold"}}>Add New Member</Typography>
       </Button>
       <Dialog
         open={addMemberDialog}

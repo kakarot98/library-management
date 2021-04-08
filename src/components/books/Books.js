@@ -10,8 +10,8 @@ const Books = () => {
     await axios.get("/books").then((res) => {
       setBooksList([]);
       setBooksList(res.data.bookDetails);
-      console.log(res.data.bookDetails);
-      console.log("fetching books from parent component");
+      // console.log(res.data.bookDetails);
+      // console.log("fetching books from parent component");
     });
   };
 

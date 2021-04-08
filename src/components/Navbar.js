@@ -11,8 +11,14 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flex: 1,
     justifyContent: "space-evenly",
-    fontWeight: "normal",
+    fontWeight: "bold",
     color: "rgb(255,255,255)",
+  },
+  toolbar: {
+    minHeight: 50,
+    alignItems: 'flex-start',
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(2),
   },
 }));
 
@@ -22,7 +28,7 @@ const Navbar = () => {
   return (
     <div>
       <AppBar position="static" style={{ backgroundColor: "#2c2f30" }}>
-        <Toolbar>
+        <Toolbar >
           <Typography variant="h4" className={classes.title} color="secondary">
             <Link to="/" style={{ textDecoration: "none", color: "#dceff5" }}>
               Home

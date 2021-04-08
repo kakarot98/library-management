@@ -11,8 +11,8 @@ const Members = () => {
     await axios.get("/members").then((res) => {
       setMembersList([]);
       setMembersList(res.data.memberDetails);
-      console.log(res.data.memberDetails);
-      console.log("fetching members from parent component");
+      // console.log(res.data.memberDetails);
+      // console.log("fetching members from parent component");
     });
   };
 

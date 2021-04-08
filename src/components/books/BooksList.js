@@ -22,7 +22,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
   const [searchBookValue, setSearchBookValue] = useState("");
   const [rows, setRows] = useState(booksList);
   const [alert, setAlert] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
+  const [errMsg, setErrMsg] = useState(``);
 
   const openAlert = () => {
     setAlert(true);
@@ -69,7 +69,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
 
   useEffect(() => {
     setList(booksList);
-    console.log(booksList);
+    // console.log(booksList);
   }, []);
 
   //delete book function
@@ -79,14 +79,30 @@ const BooksList = ({ booksList, fetchBookList }) => {
       .then((res) => {
         fetchBookList();
         setList(res.data.bookDetails);
-        console.log(res.data.bookDetails);
+        // console.log(res.data.bookDetails);
       })
-      .catch((error) => {});
-    console.log(id);
+      .catch((error) => {
+        setErrMsg(`${error}`)
+        openAlert()
+      });
+    // console.log(id);
   };
 
   //update book function
   const updateBook = async (id, bname, aname, rprice, stock) => {
+    if (!bname || !aname || !rprice || !stock) {
+      setErrMsg("Need to all details to be filled and not empty. Rent and Stock would get default values");
+      openAlert();
+      return;
+    }
+
+    if (rprice === 0) {
+      rprice = 60;
+    }
+    if (stock === 0) {
+      stock = 1;
+    }
+
     await axios
       .post(`/books/${id}/update`, {
         bookName: bname,
@@ -95,13 +111,13 @@ const BooksList = ({ booksList, fetchBookList }) => {
         stocks: stock,
       })
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         fetchBookList();
       });
   };
 
   return list.length ? (
-    <Paper>
+    <div>
       <Grid container spacing={3}>
         <Grid item xs={8}>
           <SearchBar
@@ -170,7 +186,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
           </React.Fragment>
         }
       />
-    </Paper>
+    </div>
   ) : (
     <div>
       <h2>Loading</h2>

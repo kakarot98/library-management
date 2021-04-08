@@ -7,7 +7,7 @@ import Books from "./components/books/Books";
 import Members from "./components/members/Members";
 import Transactions from "./components/Transactions";
 import BookTransactions from './components/books/BookTransactions'
-import MemberTransactions from './components/members/MemberTransactions'
+// import MemberTransactions from './components/members/MemberTransactions'
 
 function App() {
 

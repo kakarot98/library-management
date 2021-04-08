@@ -38,9 +38,8 @@ const ReturnBook = ({ member }) => {
 
   const classes = useStyles();
 
-  const [booksInPossession, setbooksInPossession] = useState(
-    member.books_in_possession
-  );
+  const booksInPossession = member.books_in_possession
+  // const [booksInPossession, setbooksInPossession] = useState(member.books_in_possession);
   const [returnDialog, setReturnDialoge] = useState(false);
   const [booksList, setBooksList] = useState([]);
   const [book, setBook] = useState(``);
@@ -53,14 +52,14 @@ const ReturnBook = ({ member }) => {
     await axios
       .get(`/members/${member.member_id}/books-in-possession`)
       .then((res) => {
-        console.log(res.data.transactions);
+        // console.log(res.data.transactions);
         res.data.transactions.map((transaction) => {
           if (transaction.balance > 0) {
             tempList.push(transaction);
           }
           return transaction;
         });
-        console.log(tempList);
+        // console.log(tempList);
         setBooksList(tempList);
       })
       .catch((err) => {
@@ -134,7 +133,7 @@ const ReturnBook = ({ member }) => {
         member: memberID,
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         closeReturnDialog();
       })
       .then(() => redirectToTransactions());

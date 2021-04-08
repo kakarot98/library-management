@@ -24,14 +24,18 @@ const useStyles = makeStyles((theme) => ({
 const Member = ({ member, deleteMember, updateMember }) => {
   const classes = useStyles();
 
-  const [memberName, setMemberName] = useState(member.member_name);
-  const [outstandingDebt, setOutstandingDebt] = useState(
-    member.outstanding_debt
-  );
-  const [totalPaid, setTotalPaid] = useState(member.total_paid);
-  const [booksInPossesion, setBooksInPossession] = useState(
-    member.books_in_possession
-  );
+  const memberName = member.member_name
+  // const [memberName, setMemberName] = useState(member.member_name);
+
+  const outstandingDebt = member.outstanding_debt
+  //const [outstandingDebt, setOutstandingDebt] = useState( member.outstanding_debt );
+
+  const booksInPossesion = member.books_in_possession
+  // const [booksInPossesion, setBooksInPossession] = useState(member.books_in_possession);
+
+  const totalPaid = member.total_paid
+  // const [totalPaid, setTotalPaid] = useState(member.total_paid);
+  
 
   const [tempName, setTempName] = useState(member.member_name);
 

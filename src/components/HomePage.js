@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Bar, HorizontalBar, Doughnut, Pie } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import {
   Card,
   Paper,
@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
-import { saveAs } from 'file-saver'; 
+import { saveAs } from "file-saver";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,7 +78,7 @@ const HomePage = () => {
     axios
       .get("/report")
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         for (const dataObj of res.data.bookRankingDetails) {
           bookNameForQuantChart.push(dataObj.book_name);
           totalQuant.push(parseInt(dataObj.total));
@@ -150,30 +150,24 @@ const HomePage = () => {
       });
   };
 
-
-
-  const savCanvas = ()=>{
+  const savCanvas = () => {
     //save to png
-    const canvasSave = document.getElementById('chart')
-    canvasSave.toBlob(function (blob){
-      saveAs(blob, "testing.png")
-    })
-  }
-
-
-
+    const canvasSave = document.getElementById("chart");
+    canvasSave.toBlob(function (blob) {
+      saveAs(blob, "testing.png");
+    });
+  };
 
   useEffect(() => {
     fetchDistinctMemberChartData();
-  }, []);
+  },[]);
 
   return (
     <div>
       <Card className={classes.card} elevation={3}>
         <CardContent>
           <Pie
-          className="Pie"
-          
+            className="Pie"
             data={membersRentedChartData}
             height={75}
             options={{
@@ -184,14 +178,16 @@ const HomePage = () => {
               },
             }}
           />
-          <Button onClick={savCanvas} ><Typography>Download</Typography></Button>
+          <Button onClick={savCanvas}>
+            <Typography>Download</Typography>
+          </Button>
         </CardContent>
       </Card>
       <Grid container>
         <Grid item md={6}>
           <Paper className={classes.paper} elevation={3}>
             <Bar
-            id="chart"
+              id="chart"
               height={500}
               data={quantityChartData}
               options={{

@@ -14,7 +14,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import DeleteForeverTwoToneIcon from "@material-ui/icons/DeleteForeverTwoTone";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import IssueBook from "./IssueBook";
-import { useHistory, Link, Redirect } from "react-router-dom";
+import {  Link } from "react-router-dom";
 // import BookTransactions from './BookTransactions'
 
 const useStyles = makeStyles((theme) => ({
@@ -26,23 +26,31 @@ const useStyles = makeStyles((theme) => ({
 const Book = ({ book, deleteBook, updateBook }) => {
   const classes = useStyles();
 
-  const [bookDetails, setBookDetails] = useState(book);
-  const [bookName, setBookName] = useState(book.book_name);
+  const bookDetails = book
+  const bookName = book.book_name
+  //const [bookDetails, setBookDetails] = useState(book);
+  //const [bookName, setBookName] = useState(book.book_name);
   const [tempBook, setTempBook] = useState(book.book_name);
-  const [authorName, setAuthorName] = useState(book.author_name);
+
+  const authorName = book.author_name
+  //const [authorName, setAuthorName] = useState(book.author_name);
   const [tempAuth, setTempAuth] = useState(book.author_name);
-  const [rentPrice, setRentPrice] = useState(book.rent_price);
+
+  const rentPrice = book.rent_price
+  //const [rentPrice, setRentPrice] = useState(book.rent_price);
   const [tempRent, setTempRent] = useState(book.rent_price);
-  const [stocks, setStocks] = useState(book.stocks_left);
+
+  const stocks = book.stocks_left
+  //const [stocks, setStocks] = useState(book.stocks_left);
   const [tempStocks, setTempStocks] = useState(book.stocks_left);
   const [updateBookDialog, setUpdateBookDialog] = useState(false);
 
   
-  const redirectBookTransaction = () => {
-    // history.push(`/books/${bookDetails.book_id}/transactions`);
+  // const redirectBookTransaction = () => {
+  //   // history.push(`/books/${bookDetails.book_id}/transactions`);
 
-    return <Redirect to={`/books/${bookDetails.book_id}/transactions`} />;
-  };
+  //   return <Redirect to={`/books/${bookDetails.book_id}/transactions`} />;
+  // };
 
   const openUpdateBookDialog = () => {
     setUpdateBookDialog(true);
@@ -112,10 +120,9 @@ const Book = ({ book, deleteBook, updateBook }) => {
               margin="dense"
               name="rentPrice"
               id="rentPrice"
-              label="Price for rent"
+              label="Price for rent - Default will be 60"
               type="number"
               fullWidth
-              defaultValue="60"
             />
             <TextField
               value={tempStocks}
@@ -124,10 +131,9 @@ const Book = ({ book, deleteBook, updateBook }) => {
               margin="dense"
               name="stocks"
               id="stocks"
-              label="Number of books to add"
+              label="Number of books to add - Default will be 1"
               type="number"
               fullWidth
-              defaultValue="1"
             />
           </DialogContent>
           <DialogActions>
@@ -156,7 +162,7 @@ const Book = ({ book, deleteBook, updateBook }) => {
           variant="contained"
           color="secondary"
           onClick={() => {
-            console.log(book.book_id);
+            // console.log(book.book_id);
             deleteBook(book.book_id);
           }}
           startIcon={<DeleteForeverTwoToneIcon />}

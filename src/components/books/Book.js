@@ -170,8 +170,9 @@ const Book = ({ book, deleteBook, updateBook }) => {
       </TableCell>
       <TableCell>
         <Typography variant="subtitle1">
-          <Link to={`books/${bookDetails.book_id}/transactions`}>
-            Related Transactions
+          <Link to={`books/${bookDetails.book_id}/transactions`} style={{textDecoration: "none", color: "#000"}}>
+            <Typography variant="button" style={{padding:"6px", border:"2px solid #fc2c03", borderRadius: "3px", backgroundColor:"rgba(252, 50, 74, 0.25)"}}>Related Transactions</Typography>
+            
           </Link>
         </Typography>
       </TableCell>

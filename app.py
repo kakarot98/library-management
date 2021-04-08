@@ -6,9 +6,6 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Nested
 from sqlalchemy.sql import func, Alias
 from sqlalchemy import case
-# to convert non serializable sql data to json easily without writing custom serializer
-import yaml
-import time
 import os
 from dotenv import load_dotenv
 load_dotenv('.env')

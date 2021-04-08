@@ -9,7 +9,6 @@ import {
   Snackbar,
   IconButton,
   Typography,
-  Box
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -87,9 +86,10 @@ const AddBook = ({ fetchBookList }) => {
         variant="contained"
         onClick={() => openAddBookDialog()}
         startIcon={<AddCircleIcon />}
-        style={{backgroundColor:"#aec9f5"}}
-      ><Typography variant="subtitle1" style={{fontWeight:"bold"}}>
-        Add New Book
+        style={{ backgroundColor: "#aec9f5" }}
+      >
+        <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
+          Add New Book
         </Typography>
       </Button>
       <Dialog

@@ -41,7 +41,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
   useEffect(() => {
     setList(membersList);
     // console.log(membersList);
-  }, []);
+  }, [membersList]);
 
   //function to delete the member
   const deleteMember = async (id) => {

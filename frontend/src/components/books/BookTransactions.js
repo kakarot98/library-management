@@ -13,7 +13,7 @@ import axios from "axios";
 
 const BookTransactions = (props) => {
   const [transactionDetails, setTransactionDetails] = useState([]);
-  const id = props.match.params.id
+  const id = props.match.params.id;
   // const [id, setId] = useState(props.match.params.id);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const BookTransactions = (props) => {
       setTransactionDetails(res.data.transactions);
     };
     getTransactions();
-  }, []);
+  }, [id]);
 
   return transactionDetails.length ? (
     <div>

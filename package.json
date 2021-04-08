@@ -1,47 +1,25 @@
 {
-  "name": "library-frontend",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^4.11.2",
-    "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.8.3",
-    "axios": "^0.21.1",
-    "chart.js": "^2.9.4",
-    "file-saver": "^2.0.5",
-    "material-ui-search-bar": "^1.0.0",
-    "react": "^17.0.1",
-    "react-chartjs-2": "^2.11.1",
-    "react-dom": "^17.0.1",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
-    "web-vitals": "^1.1.1"
-  },
+  "name": "library-management",
+  "version": "1.0.0",
+  "description": "Admin can add books and other details about the book such as its Author Name and the price for its rent. The admin can delete or update the information of these books. Same can be done with its members The admin can keep track of the number of books currently in circulation and books left in stock. The members can issue or return a book. A rent would be charged on returning the book. Members cannot proceed without paying these rent. A member cannot issue a book once his/her outstanding debt reaches  Rs.500. Paying off these rents by returning the books will only let them issue more books. The homepage shows reports of most popular books and highest paying members. The transactions page keeps track of all the transactions and can be referred when needed.",
+  "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "cd frontend && npm start",
+    "start-api": "cd .. && flask run",
+    "prebuild": "cd frontend && npm run lint",
+    "build": "cd frontend && npm run build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "install": "cd frontend && npm install"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kakarot98/library-management.git"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kakarot98/library-management/issues"
   },
-  "proxy": "http://127.0.0.1:5000/"
+  "homepage": "https://github.com/kakarot98/library-management#readme"
 }

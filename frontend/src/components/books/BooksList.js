@@ -44,8 +44,8 @@ const BooksList = ({ booksList, fetchBookList }) => {
       );
     });
     if (filteredRows.length === 0) {
-      setErrMsg('No results found')
-      openAlert()
+      setErrMsg("No results found");
+      openAlert();
     }
     setRows(filteredRows);
   };
@@ -69,8 +69,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
 
   useEffect(() => {
     setList(booksList);
-    // console.log(booksList);
-  }, []);
+  }, [booksList]);
 
   //delete book function
   const deleteBook = (id) => {
@@ -82,8 +81,8 @@ const BooksList = ({ booksList, fetchBookList }) => {
         // console.log(res.data.bookDetails);
       })
       .catch((error) => {
-        setErrMsg(`${error}`)
-        openAlert()
+        setErrMsg(`${error}`);
+        openAlert();
       });
     // console.log(id);
   };
@@ -91,7 +90,9 @@ const BooksList = ({ booksList, fetchBookList }) => {
   //update book function
   const updateBook = async (id, bname, aname, rprice, stock) => {
     if (!bname || !aname || !rprice || !stock) {
-      setErrMsg("Need to all details to be filled and not empty. Rent and Stock would get default values");
+      setErrMsg(
+        "Need to all details to be filled and not empty. Rent and Stock would get default values"
+      );
       openAlert();
       return;
     }

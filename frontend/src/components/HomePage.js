@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { Bar, Pie } from "react-chartjs-2";
 import {
@@ -62,7 +62,7 @@ const HomePage = () => {
     return "rgb(" + rgb.join(",") + ")";
   };
 
-  const fetchDistinctMemberChartData = () => {
+  const fetchDistinctMemberChartData = useCallback(() => {
     let bookNameForPieChart = [];
     let numberOfMembers = [];
 
@@ -148,7 +148,7 @@ const HomePage = () => {
         setErrMsg(err);
         openAlert();
       });
-  };
+  }, []);
 
   const savCanvas = () => {
     //save to png
@@ -160,7 +160,7 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchDistinctMemberChartData();
-  },[]);
+  }, [fetchDistinctMemberChartData]);
 
   return (
     <div>

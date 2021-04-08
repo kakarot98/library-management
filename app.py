@@ -9,8 +9,11 @@ from sqlalchemy import case
 # to convert non serializable sql data to json easily without writing custom serializer
 import yaml
 import time
-
-app = Flask(__name__)
+import os
+from dotenv import load_dotenv
+load_dotenv('.env')
+app = Flask(__name__, static_folder='./frontend/build/static',
+            template_folder='./frontend/build')
 
 
 # Mysql config
@@ -22,6 +25,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 # Object model for books
+
 
 class Books(db.Model):
     book_id = db.Column(db.Integer, primary_key=True)
@@ -106,9 +110,10 @@ def checkOutstandingDebtLimitCrossed(member):
 
 
 # First Page
-@app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return render_template("index.html")
 
 
 # List of Books with update and delete options
@@ -371,7 +376,6 @@ def returnBook():
         member_id = int(details['member'])
         #payment = int(details['payment'])
         transaction_type = "return"
-        
 
         # if the member has books_in_possession more than 0
         if checkAnyBooksInPossession(member_id):
@@ -401,19 +405,20 @@ def returnBook():
             return jsonify({'message': 'This member currently does not have any book in possession to be able to return'})
 
 
-
 @app.route('/report', methods=['GET'])
 def report():
     if request.method == 'GET':
         transactions = Transactions.query.all()
         transactionsSchema = TransactionsSchema(many=True)
         transactions = transactionsSchema.dump(transactions)
-        
+
         #query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
         query2 = db.engine.execute('SELECT b.book_id, b.book_name,b.stocks_left,(b.stocks_left+b.issued) AS total, COUNT(DISTINCT t.member_id) AS number_of_members,COUNT(t.transaction_type = "issue") AS popularity FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY b.book_id ORDER BY number_of_members DESC').fetchall()
-        query1 = db.engine.execute('SELECT t.book_id, b.book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN books b ON t.book_id = b.book_id GROUP BY b.book_id ORDER BY popularity DESC').fetchall()
-        
-        query3 = db.engine.execute('SELECT * FROM members ORDER BY total_paid DESC').fetchall()
+        query1 = db.engine.execute(
+            'SELECT t.book_id, b.book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN books b ON t.book_id = b.book_id GROUP BY b.book_id ORDER BY popularity DESC').fetchall()
+
+        query3 = db.engine.execute(
+            'SELECT * FROM members ORDER BY total_paid DESC').fetchall()
 
         # popularityByTotalRents = []
         # for row_number, row in enumerate(query1):
@@ -425,21 +430,19 @@ def report():
         for row_number, row in enumerate(query2):
             bookRankingDetails.append({})
             for column_number, value in enumerate(row):
-                bookRankingDetails[row_number][row.keys()[column_number]] = value
-
+                bookRankingDetails[row_number][row.keys()[
+                    column_number]] = value
 
         memberRankingDetails = []
         for row_number, row in enumerate(query3):
             memberRankingDetails.append({})
             for column_number, value in enumerate(row):
-                memberRankingDetails[row_number][row.keys()[column_number]] = value
+                memberRankingDetails[row_number][row.keys()[
+                    column_number]] = value
 
-        return jsonify({ 'bookRankingDetails':bookRankingDetails, 'memberRankingDetails': memberRankingDetails})
-        
+        return jsonify({'bookRankingDetails': bookRankingDetails, 'memberRankingDetails': memberRankingDetails})
+
         # return jsonify({'popularityByTotalRents': popularityByTotalRents, 'popularityByDistinctRents':popularityByDistinctRents})
-
-
-
 
 
 # Deleting all transactions
@@ -450,5 +453,12 @@ def deleteAllTransactions():
     return redirect('/transactions')
 
 
+def main():
+    app.threaded = True
+    app.processes = 2
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    main()

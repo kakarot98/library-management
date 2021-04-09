@@ -76,7 +76,7 @@ const HomePage = () => {
     let membersPayment = [];
 
     axios
-      .get("/report")
+      .get("/api/report")
       .then((res) => {
         // console.log(res.data);
         for (const dataObj of res.data.bookRankingDetails) {

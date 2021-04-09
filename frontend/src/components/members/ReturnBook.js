@@ -50,7 +50,7 @@ const ReturnBook = ({ member }) => {
 
   const fetchBooksInPossessionList = async (id) => {
     await axios
-      .get(`/members/${member.member_id}/books-in-possession`)
+      .get(`/api/members/${member.member_id}/books-in-possession`)
       .then((res) => {
         // console.log(res.data.transactions);
         res.data.transactions.map((transaction) => {
@@ -86,7 +86,7 @@ const ReturnBook = ({ member }) => {
 
   const fetchTransactionsTable = async () => {
     fetchBooksInPossessionList();
-    // await axios.get("/books").then((res) => {
+    // await axios.get("/api/books").then((res) => {
     //   setBooksList(res.data.bookDetails);
     //   console.log(res.data.bookDetails);
     // });
@@ -128,7 +128,7 @@ const ReturnBook = ({ member }) => {
       return;
     }
     await axios
-      .post("/transactions/return-book", {
+      .post("/api/transactions/return-book", {
         book: bookID,
         member: memberID,
       })

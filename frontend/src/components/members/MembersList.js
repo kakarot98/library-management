@@ -46,7 +46,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
   //function to delete the member
   const deleteMember = async (id) => {
     await axios
-      .delete(`/members/${id}/delete`)
+      .delete(`/api/members/${id}/delete`)
       .then((res) => {
         fetchMembersList();
         // setList(res.data.memberDetails);
@@ -62,7 +62,7 @@ const MembersList = ({ fetchMembersList, membersList }) => {
   //update member function
   const updateMember = async (id, mname) => {
     await axios
-      .post(`/members/${id}/update`, {
+      .post(`/api/members/${id}/update`, {
         memberName: mname,
       })
       .then((res) => {

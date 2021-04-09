@@ -8,7 +8,7 @@ const Members = () => {
 
   //function to fetch member details and then store them afresh in the list to render properly
   const fetchMembersList = async () => {
-    await axios.get("/members").then((res) => {
+    await axios.get("/api/members").then((res) => {
       setMembersList([]);
       setMembersList(res.data.memberDetails);
       // console.log(res.data.memberDetails);

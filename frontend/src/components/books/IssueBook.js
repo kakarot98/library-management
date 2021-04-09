@@ -62,7 +62,7 @@ const IssueBook = ({ bookDetails }) => {
 
   const fetchTransactionsTable = async () => {
     await axios
-      .get("/members")
+      .get("/api/members")
       .then((res) => {
         setMembersList(res.data.memberDetails);
         // console.log(res.data.memberDetails);
@@ -101,7 +101,7 @@ const IssueBook = ({ bookDetails }) => {
     }
 
     await axios
-      .post("/transactions/issue-book", {
+      .post("/api/transactions/issue-book", {
         book: bookID,
         member: memberID,
       })

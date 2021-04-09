@@ -74,7 +74,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
   //delete book function
   const deleteBook = (id) => {
     axios
-      .delete(`/books/${id}/delete`)
+      .delete(`/api/books/${id}/delete`)
       .then((res) => {
         fetchBookList();
         setList(res.data.bookDetails);
@@ -105,7 +105,7 @@ const BooksList = ({ booksList, fetchBookList }) => {
     }
 
     await axios
-      .post(`/books/${id}/update`, {
+      .post(`/api/books/${id}/update`, {
         bookName: bname,
         authorName: aname,
         rentPrice: rprice,

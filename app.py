@@ -85,8 +85,8 @@ def getAvailability(book):
     elif bookDetail.issued < 1:
         return False
 
-# checks if the member has any book or not
 
+# checks if the member has any book or not
 
 def checkAnyBooksInPossession(member):
     memberDetail = Members.query.get(member)
@@ -95,8 +95,8 @@ def checkAnyBooksInPossession(member):
     elif memberDetail.books_in_possession >= 1:
         return True
 
-# checks if the outstanding deb to be paid is above 500
 
+# checks if the outstanding deb to be paid is above 500
 
 def checkOutstandingDebtLimitCrossed(member):
     memberDetail = Members.query.get(member)
@@ -114,7 +114,7 @@ def catch_all(path):
 
 
 # List of Books with update and delete options
-@app.route('/books', methods=['GET', 'POST'])
+@app.route('/api/books', methods=['GET', 'POST'])
 def books():
     if request.method == 'GET':
 
@@ -125,9 +125,6 @@ def books():
 
     if request.method == 'POST':
         frontEndData = request.get_json()
-
-        # print(bookDetailsFromUI)
-        # return jsonify({'obj': bookDetailsFromUI})
 
         bookName = frontEndData['bookName']
         authorName = frontEndData['authorName']
@@ -147,7 +144,7 @@ def books():
 
 
 # deleting book
-@app.route('/books/<int:id>/delete', methods=['DELETE'])
+@app.route('/api/books/<int:id>/delete', methods=['DELETE'])
 def delete_book(id):
     if request.method == 'DELETE':
         try:
@@ -162,7 +159,7 @@ def delete_book(id):
 
 
 # updating the book details
-@app.route('/books/<int:id>/update', methods=['GET', 'POST'])
+@app.route('/api/books/<int:id>/update', methods=['GET', 'POST'])
 def update_book(id):
     book = Books.query.get_or_404(id)
 
@@ -188,21 +185,19 @@ def update_book(id):
 
 
 # Check transactions of the particular book
-@app.route('/books/<int:id>/transactions', methods=['GET'])
+@app.route('/api/books/<int:id>/transactions', methods=['GET'])
 def showBookTransactions(id):
     if request.method == 'GET':
         transactions = Transactions.query.filter(Transactions.book_id == id)
         transactionsSchema = TransactionsSchema(many=True)
         transactions = transactionsSchema.dump(transactions)
         length = 0
-        # for transaction in transactions:
-        #     length = length+1
-        # print(length)
+        
         return jsonify({'transactions': transactions})
 
 
 # List of Members with update and delete options
-@app.route('/members', methods=['GET', 'POST'])
+@app.route('/api/members', methods=['GET', 'POST'])
 def members():
     if request.method == 'GET':
 
@@ -231,7 +226,7 @@ def members():
 
 
 # update members
-@app.route('/members/<int:id>/update', methods=['GET', 'POST'])
+@app.route('/api/members/<int:id>/update', methods=['GET', 'POST'])
 def update_members(id):
 
     member = Members.query.get_or_404(id)
@@ -255,7 +250,7 @@ def update_members(id):
 
 
 # deleting members
-@app.route('/members/<int:id>/delete', methods=['DELETE'])
+@app.route('/api/members/<int:id>/delete', methods=['DELETE'])
 def delete_member(id):
 
     if request.method == 'DELETE':
@@ -276,7 +271,7 @@ def delete_member(id):
             return jsonify({'error': 'Database error, member not deleted'})
 
 
-@app.route('/members/<int:id>/books-in-possession', methods=['GET'])
+@app.route('/api/members/<int:id>/books-in-possession', methods=['GET'])
 def getBooksInPossession(id):
     if request.method == 'GET':
         #transactions = Transactions.query.filter_by(member_id=id and func.sum(case((Transactions.transaction_type=='issue',1),else_=1)-case(Transactions.transaction_type=='return,1'),else_=0))
@@ -294,7 +289,7 @@ def getBooksInPossession(id):
         return jsonify({'transactions': result})
 
 
-@app.route('/transactions', methods=['GET', 'POST'])
+@app.route('/api/transactions', methods=['GET', 'POST'])
 def transactions():
 
     if request.method == 'GET':
@@ -307,7 +302,6 @@ def transactions():
         membersSchema = MembersScehema(many=True)
         members = membersSchema.dump(members)
 
-        # .join(Members).join(Books).filter(Books.book_id==Transactions.book_id)
         transactions = Transactions.query.all()
         transactionsSchema = TransactionsSchema(many=True)
         transactions = transactionsSchema.dump(transactions)
@@ -316,7 +310,7 @@ def transactions():
 
 
 # issue book transaction
-@app.route('/transactions/issue-book', methods=['GET', 'POST'])
+@app.route('/api/transactions/issue-book', methods=['GET', 'POST'])
 def issueBook():
     if request.method == 'GET':
         books = Books.query.all()
@@ -358,7 +352,7 @@ def issueBook():
 
 
 # return book transaction
-@app.route('/transactions/return-book', methods=['GET', 'POST'])
+@app.route('/api/transactions/return-book', methods=['GET', 'POST'])
 def returnBook():
 
     if request.method == 'GET':
@@ -402,7 +396,7 @@ def returnBook():
             return jsonify({'message': 'This member currently does not have any book in possession to be able to return'})
 
 
-@app.route('/report', methods=['GET'])
+@app.route('/api/report', methods=['GET'])
 def report():
     if request.method == 'GET':
         transactions = Transactions.query.all()
@@ -443,7 +437,7 @@ def report():
 
 
 # Deleting all transactions
-@app.route('/transactions/delete')
+@app.route('/api/transactions/delete')
 def deleteAllTransactions():
     db.session.query(Transactions).delete()
     db.session.commit()

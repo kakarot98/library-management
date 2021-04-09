@@ -18,7 +18,7 @@ const BookTransactions = (props) => {
 
   useEffect(() => {
     const getTransactions = async () => {
-      const res = await axios.get(`/books/${id}/transactions`);
+      const res = await axios.get(`/api/books/${id}/transactions`);
       setTransactionDetails(res.data.transactions);
     };
     getTransactions();

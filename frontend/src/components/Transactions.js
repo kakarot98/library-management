@@ -17,7 +17,7 @@ const Transactions = () => {
 
   useEffect(() => {
       const fetchTransactions = async () => {
-          await axios.get('/transactions').then(res=>{ setTransactions(res.data.transactions)})
+          await axios.get('/api/transactions').then(res=>{ setTransactions(res.data.transactions)})
       }
       fetchTransactions()
 

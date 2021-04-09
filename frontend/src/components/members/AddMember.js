@@ -55,7 +55,7 @@ const AddMember = ({ fetchMembersList }) => {
     }
 
     await axios
-      .post("/members", {
+      .post("/api/members", {
         memberName: mname,
       })
       .then((res) => {

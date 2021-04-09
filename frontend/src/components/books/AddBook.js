@@ -63,7 +63,7 @@ const AddBook = ({ fetchBookList }) => {
     }
 
     await axios
-      .post("/books", {
+      .post("/api/books", {
         bookName: bname,
         authorName: aname,
         rentPrice: rprice,

@@ -21,22 +21,22 @@ For npm packages use **npm install**
 
 ## GIF
 
-![ScreenRecording 1](https://github.com/kakarot98/library-management/tree/main/screenshots/ScreenRecording1.gif)
+![ScreenRecording 1](https://github.com/kakarot98/library-management/blob/main/screenshots/ScreenRecording1.gif)
 
 
 ## Screenshots
 
 ### Charts:
-![Screenshot 1](https://github.com/kakarot98/library-management/tree/main/screenshots/Screenshot1.png)
+![Screenshot 1](https://github.com/kakarot98/library-management/blob/main/screenshots/Screenshot1.png)
 
-![Screenshot 2](https://github.com/kakarot98/library-management/tree/main/screenshots/Screenshot2.png)
+![Screenshot 2](https://github.com/kakarot98/library-management/blob/main/screenshots/Screenshot2.png)
 
 ### List of books
-![Screenshot 3](https://github.com/kakarot98/library-management/tree/main/screenshots/Screenshot3.png)
+![Screenshot 3](https://github.com/kakarot98/library-management/blob/main/screenshots/Screenshot3.png)
 
 ### List of members
-![Screenshot 4](https://github.com/kakarot98/library-management/tree/main/screenshots/Screenshot4.png)
+![Screenshot 4](https://github.com/kakarot98/library-management/blob/main/screenshots/Screenshot4.png)
 
 ### Record for all transactions
-![Screenshot 5](https://github.com/kakarot98/library-management/tree/main/screenshots/Screenshot5.png)
+![Screenshot 5](https://github.com/kakarot98/library-management/blob/main/screenshots/Screenshot5.png)
 

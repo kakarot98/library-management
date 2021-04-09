@@ -19,3 +19,24 @@ all the transactions and can be referred when needed.
 For npm packages use **npm install**
 
 
+## GIF
+
+![ScreenRecording 1](https://github.com/kakarot98/library-management/tree/develop/frontend/screenshots/ScreenRecording1.gif?raw=true)
+
+
+## Screenshots
+
+### Charts:
+![Screenshot 1](https://github.com/kakarot98/library-management/tree/develop/frontend/screenshots/Screenshot1.png?raw=true)
+
+![Screenshot 2](https://github.com/kakarot98/library-management/tree/develop/frontend/screenshots/Screenshot2.png?raw=true)
+
+### List of books
+![Screenshot 3](https://github.com/kakarot98/library-management/tree/develop/frontend/screenshots/Screenshot3.png?raw=true)
+
+### List of members
+![Screenshot 4](https://github.com/kakarot98/library-management/tree/develop/frontend/screenshots/Screenshot4.png?raw=true)
+
+### Record for all transactions
+![Screenshot 5](https://github.com/kakarot98/library-management/tree/develop/frontend/screenshots/Screenshot5.png?raw=true)
+

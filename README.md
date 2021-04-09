@@ -1,4 +1,5 @@
 # Library Management System
+[*Link to the hosted demo app*](https://library-management-frappe.herokuapp.com/ "Library Management")
 ### This app is made only for the admin of the library to manage the members and books of the library
 Admin can add books and other details about the book such as its Author Name and the price for its
 rent. The admin can delete or update the information of these books. Same can be done with its members
@@ -8,6 +9,9 @@ proceed without paying these rent. A member cannot issue a book once his/her out
 Rs.500. Paying off these rents by returning the books will only let them issue more books. The homepage
 shows reports of most popular books and highest paying members. The transactions page keeps track of
 all the transactions and can be referred when needed.
+
+
+
 
 
 ## Technology Stack

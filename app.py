@@ -32,11 +32,10 @@ class Books(db.Model):
     book_id = db.Column(db.Integer, primary_key=True)
     book_name = db.Column(db.String(30), nullable=False)
     author_name = db.Column(db.String(40), nullable=False)
-    # issued=db.Column(db.Boolean, default=False)
     rent_price = db.Column(db.Integer, default=60)
     stocks_left = db.Column(db.Integer, default=1)
     issued = db.Column(db.Integer, default=0)
-    # transactions = db.relationship("Transactions", backref="books")
+
 
     def __repr__(self):
         return "<Book %r>", self.book_id
@@ -55,7 +54,6 @@ class Members(db.Model):
     outstanding_debt = db.Column(db.Integer, nullable=False, default=0)
     total_paid = db.Column(db.Integer, nullable=False, default=0)
     books_in_possession = db.Column(db.Integer, nullable=False, default=0)
-    # transactions = db.relationship("Transactions", backref="members")
 
 
 class MembersScehema(SQLAlchemyAutoSchema):
@@ -343,7 +341,7 @@ def issueBook():
             book_id = int(details["book"])
             member_id = int(details["member"])
             transaction_type = "issue"
-            # return jsonify({'message':'receiving data', 'details': details})
+
             if getAvailability(book_id) and not checkOutstandingDebtLimitCrossed(
                 member_id
             ):
@@ -409,7 +407,6 @@ def returnBook():
         details = request.get_json()
         book_id = int(details["book"])
         member_id = int(details["member"])
-        # payment = int(details['payment'])
         transaction_type = "return"
 
         # if the member has books_in_possession more than 0
@@ -452,7 +449,6 @@ def report():
         transactionsSchema = TransactionsSchema(many=True)
         transactions = transactionsSchema.dump(transactions)
 
-        # query1 = db.engine.execute('SELECT t.book_id, book_name,COUNT(t.transaction_type = "issue") AS popularity FROM transactions t INNER JOIN library.books b ON t.book_id = b.book_id GROUP BY book_id ORDER BY popularity DESC').fetchall()
         query2 = db.engine.execute(
             'SELECT b.book_id, b.book_name,b.stocks_left,(b.stocks_left+b.issued) AS total, COUNT(DISTINCT t.member_id) AS number_of_members,COUNT(t.transaction_type = "issue") AS popularity FROM books b LEFT JOIN transactions t ON b.book_id = t.book_id GROUP BY b.book_id ORDER BY number_of_members DESC'
         ).fetchall()
@@ -464,11 +460,6 @@ def report():
             "SELECT * FROM members ORDER BY total_paid DESC"
         ).fetchall()
 
-        # popularityByTotalRents = []
-        # for row_number, row in enumerate(query1):
-        #     popularityByTotalRents.append({})
-        #     for column_number, value in enumerate(row):
-        #         popularityByTotalRents[row_number][row.keys()[column_number]] = value
 
         bookRankingDetails = []
         for row_number, row in enumerate(query2):
@@ -488,8 +479,6 @@ def report():
                 "memberRankingDetails": memberRankingDetails,
             }
         )
-
-        # return jsonify({'popularityByTotalRents': popularityByTotalRents, 'popularityByDistinctRents':popularityByDistinctRents})
 
 
 # Deleting all transactions

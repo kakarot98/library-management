@@ -60,7 +60,7 @@ const IssueBook = ({ bookDetails }) => {
     setErrMsg("");
   };
 
-  const fetchTransactionsTable = async () => {
+  const fetchMembers = async () => {
     await axios
       .get("/api/members")
       .then((res) => {
@@ -73,21 +73,15 @@ const IssueBook = ({ bookDetails }) => {
       });
   };
 
-  //   useEffect(()=>{
-  // fetchTransactionsTable()
-  //   },[])
 
   const openIssueDialog = () => {
-    // console.log(typeof bookDetails.book_id)
     setMemberName(``);
     setMembersList([]);
     setIssueDialoge(true);
-    fetchTransactionsTable();
+    fetchMembers();
   };
 
   const closeIssueDialog = () => {
-    // membersList.map(member=>console.log(member.member_name))
-    // console.log(typeof memberName)
     setIssueDialoge(false);
     setMemberName(``);
     setMembersList([]);

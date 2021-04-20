@@ -75,7 +75,9 @@ const AddBook = ({ fetchBookList }) => {
         closeAddBookDialog();
       })
       .catch((err) => {
-        setErrMsg(err);
+        setErrMsg(
+          `${err} ${err.response.data.errorMessage}`
+        );
         openAlert();
       });
   };

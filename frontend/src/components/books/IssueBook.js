@@ -100,14 +100,13 @@ const IssueBook = ({ bookDetails }) => {
         member: memberID,
       })
       .then((res) => {
-        // console.log(res);
         closeIssueDialog();
       })
       .then(() => redirectToTransactions())
       .catch((err) => {
-        // console.log(err);
+        console.log(err.response.data.errorMessage);
         setErrMsg(
-          `${err} - This happened because the member has debt above Rs.500`
+          `${err} - ${err.response.data.errorMessage}`
         );
         openAlert();
       });
@@ -141,7 +140,7 @@ const IssueBook = ({ bookDetails }) => {
                 onChange={(e) => setMemberName(e.target.value)}
               >
                 {membersList.map((member) => (
-                  <MenuItem value={member.member_id}>
+                  <MenuItem value={member.member_id} key={member.member_id}>
                     {member.member_name}
                   </MenuItem>
                 ))}

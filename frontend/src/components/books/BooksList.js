@@ -80,8 +80,8 @@ const BooksList = ({ booksList, fetchBookList }) => {
         setList(res.data.bookDetails);
         // console.log(res.data.bookDetails);
       })
-      .catch((error) => {
-        setErrMsg(`${error}`);
+      .catch((err) => {
+        setErrMsg(`${err} - ${err.response.data.errorMessage}`);
         openAlert();
       });
     // console.log(id);
@@ -114,6 +114,10 @@ const BooksList = ({ booksList, fetchBookList }) => {
       .then((res) => {
         // console.log(res.data);
         fetchBookList();
+      })
+      .catch((err) => {
+        setErrMsg(`${err} - ${err.response.data.errorMessage}`);
+        openAlert();
       });
   };
 

@@ -63,7 +63,9 @@ const AddMember = ({ fetchMembersList }) => {
         fetchMembersList();
         closeAddMemberDialog();
       }).catch((err) => {
-        setErrMsg(err);
+        setErrMsg(
+          `${err} - ${err.response.data.errorMessage}`
+        );
         openAlert();
       })
   };

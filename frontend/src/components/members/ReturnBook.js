@@ -136,7 +136,12 @@ const ReturnBook = ({ member }) => {
         // console.log(res);
         closeReturnDialog();
       })
-      .then(() => redirectToTransactions());
+      .then(() => redirectToTransactions()).catch(err => {
+        setErrMsg(
+          `${err} - ${err.response.data.errorMessage}`
+        );
+        openAlert()
+      })
   };
 
   return (

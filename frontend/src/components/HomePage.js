@@ -78,8 +78,8 @@ const HomePage = () => {
     axios
       .get("/api/report")
       .then((res) => {
-        // console.log(res.data);
-        for (const dataObj of res.data.bookRankingDetails) {
+        //console.log(res.data);
+        for (const dataObj of res.data.bookStockDetails) {
           bookNameForQuantChart.push(dataObj.book_name);
           totalQuant.push(parseInt(dataObj.total));
           quantLeftInLib.push(parseInt(dataObj.stocks_left));
@@ -111,7 +111,7 @@ const HomePage = () => {
               label: "Number of Members who rented",
               data: numberOfMembers,
               borderWidth: 0.5,
-              backgroundColor: colors,
+              backgroundColor: ["red", "blue", "green", "gray", "orange", "purple", "yellow"]
             },
           ],
         });
@@ -173,7 +173,7 @@ const HomePage = () => {
             options={{
               responsive: true,
               title: {
-                text: "Popularity by members who rented",
+                text: "Top 7 books rented by most members",
                 display: true,
               },
             }}
@@ -202,7 +202,7 @@ const HomePage = () => {
                 },
                 responsive: true,
                 title: {
-                  text: "Quantity of books",
+                  text: "Top 6 books left in library",
                   display: true,
                 },
                 maintainAspectRatio: false,
@@ -219,7 +219,7 @@ const HomePage = () => {
               options={{
                 maintainAspectRatio: false,
                 responsive: true,
-                title: { text: "Most paid to the library", display: true },
+                title: { text: "Top 5 members who have paid most", display: true },
                 scales: {
                   xAxes: [
                     {

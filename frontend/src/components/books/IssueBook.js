@@ -60,7 +60,7 @@ const IssueBook = ({ bookDetails }) => {
     setErrMsg("");
   };
 
-  const fetchTransactionsTable = async () => {
+  const fetchMembers = async () => {
     await axios
       .get("/api/members")
       .then((res) => {
@@ -73,21 +73,15 @@ const IssueBook = ({ bookDetails }) => {
       });
   };
 
-  //   useEffect(()=>{
-  // fetchTransactionsTable()
-  //   },[])
 
   const openIssueDialog = () => {
-    // console.log(typeof bookDetails.book_id)
     setMemberName(``);
     setMembersList([]);
     setIssueDialoge(true);
-    fetchTransactionsTable();
+    fetchMembers();
   };
 
   const closeIssueDialog = () => {
-    // membersList.map(member=>console.log(member.member_name))
-    // console.log(typeof memberName)
     setIssueDialoge(false);
     setMemberName(``);
     setMembersList([]);
@@ -106,14 +100,13 @@ const IssueBook = ({ bookDetails }) => {
         member: memberID,
       })
       .then((res) => {
-        // console.log(res);
         closeIssueDialog();
       })
       .then(() => redirectToTransactions())
       .catch((err) => {
-        // console.log(err);
+        console.log(err.response.data.errorMessage);
         setErrMsg(
-          `${err} - This happened because the member has debt above Rs.500`
+          `${err} - ${err.response.data.errorMessage}`
         );
         openAlert();
       });
@@ -147,7 +140,7 @@ const IssueBook = ({ bookDetails }) => {
                 onChange={(e) => setMemberName(e.target.value)}
               >
                 {membersList.map((member) => (
-                  <MenuItem value={member.member_id}>
+                  <MenuItem value={member.member_id} key={member.member_id}>
                     {member.member_name}
                   </MenuItem>
                 ))}

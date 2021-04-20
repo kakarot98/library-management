@@ -12,7 +12,7 @@ const Books = () => {
       setBooksList(res.data.bookDetails);
       // console.log(res.data.bookDetails);
       // console.log("fetching books from parent component");
-    });
+    }).catch(err => console.log(err));
   };
 
   useEffect(() => {

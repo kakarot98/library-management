@@ -53,7 +53,9 @@ const MembersList = ({ fetchMembersList, membersList }) => {
         // console.log(res.data.memberDetails);
       })
       .catch((err) => {
-        setErrMsg(err);
+        setErrMsg(
+          `${err} - ${err.response.data.errorMessage}`
+        );
         openAlert();
       });
     // console.log(id);
@@ -70,7 +72,9 @@ const MembersList = ({ fetchMembersList, membersList }) => {
         fetchMembersList();
       })
       .catch((err) => {
-        setErrMsg(err);
+        setErrMsg(
+          `${err} - ${err.response.data.errorMessage}`
+        );
         openAlert();
       });
   };

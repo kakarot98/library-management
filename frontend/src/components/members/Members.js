@@ -13,7 +13,7 @@ const Members = () => {
       setMembersList(res.data.memberDetails);
       // console.log(res.data.memberDetails);
       // console.log("fetching members from parent component");
-    });
+    }).catch(err=> console.log(err));
   };
 
   useEffect(() => {

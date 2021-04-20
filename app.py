@@ -142,10 +142,10 @@ def catch_all(path):
 def books():
     if request.method == "GET":
 
-        bookDetails = Books.query.all()
+        book_details = Books.query.all()
         book_schema = BooksSchema(many=True)
-        bookDetails = book_schema.dump(bookDetails)
-        return jsonify({"bookDetails": bookDetails})
+        book_details = book_schema.dump(book_details)
+        return jsonify({"bookDetails": book_details})
 
     if request.method == "POST":
         frontend_data = request.get_json()
@@ -172,10 +172,10 @@ def books():
 
         db.session.add(newBook)
         db.session.commit()
-        bookDetails = Books.query.all()
+        book_details = Books.query.all()
         book_schema = BooksSchema(many=True)
-        bookDetails = book_schema.dump(bookDetails)
-        return jsonify({"bookDetails": bookDetails})
+        book_details = book_schema.dump(book_details)
+        return jsonify({"bookDetails": book_details})
 
 
 # deleting book
@@ -184,10 +184,10 @@ def books():
 def delete_book(id):
     Books.query.filter_by(book_id=id).delete()
     db.session.commit()
-    bookDetails = Books.query.all()
+    book_details = Books.query.all()
     book_schema = BooksSchema(many=True)
-    bookDetails = book_schema.dump(bookDetails)
-    return jsonify({"bookDetails": bookDetails})
+    book_details = book_schema.dump(book_details)
+    return jsonify({"bookDetails": book_details})
 
 
 # updating the book details
@@ -215,10 +215,10 @@ def update_book(id):
         book.stocks_left = int(frontend_data["stocks"])
 
         db.session.commit()
-        bookDetails = Books.query.all()
+        book_details = Books.query.all()
         book_schema = BooksSchema(many=True)
-        bookDetails = book_schema.dump(bookDetails)
-        return jsonify({"bookDetails": bookDetails})
+        book_details = book_schema.dump(book_details)
+        return jsonify({"bookDetails": book_details})
 
 
 # Check transactions of the particular book
@@ -239,10 +239,10 @@ def showBookTransactions(id):
 def members():
     if request.method == "GET":
 
-        memberDetails = Members.query.all()
+        member_details = Members.query.all()
         member_schema = MembersScehema(many=True)
-        memberDetails = member_schema.dump(memberDetails)
-        return jsonify({"memberDetails": memberDetails})
+        member_details = member_schema.dump(member_details)
+        return jsonify({"memberDetails": member_details})
 
     if request.method == "POST":
         frontend_data = request.get_json()
@@ -259,10 +259,10 @@ def members():
 
         db.session.add(new_member)
         db.session.commit()
-        memberDetails = Members.query.all()
+        memeber_details = Members.query.all()
         member_schema = MembersScehema(many=True)
-        memberDetails = member_schema.dump(memberDetails)
-        return jsonify({"memberDetails": memberDetails})
+        memeber_details = member_schema.dump(memeber_details)
+        return jsonify({"memberDetails": memeber_details})
 
 
 # update members
@@ -281,10 +281,10 @@ def update_members(id):
         member.member_name = frontend_data["memberName"]
 
         db.session.commit()
-        memberDetails = Members.query.all()
+        member_details = Members.query.all()
         member_schema = MembersScehema(many=True)
-        memberDetails = member_schema.dump(memberDetails)
-        return jsonify({"memberDetails": memberDetails})
+        member_details = member_schema.dump(member_details)
+        return jsonify({"memberDetails": member_details})
 
 
 # deleting members
@@ -303,10 +303,10 @@ def delete_member(id):
         db.session.delete(member)
         db.session.commit()
 
-        memberDetails = Members.query.all()
+        member_details = Members.query.all()
         member_schema = MembersScehema(many=True)
-        memberDetails = member_schema.dump(memberDetails)
-        return jsonify({"memberDetails": memberDetails})
+        member_details = member_schema.dump(member_details)
+        return jsonify({"memberDetails": member_details})
 
 
 @app.route("/api/members/<int:id>/books-in-possession", methods=["GET"])
@@ -449,6 +449,7 @@ def returnBook():
 
 
 @app.route("/api/report", methods=["GET"])
+@exception_handler
 def report():
     transactions = Transactions.query.all()
     transaction_schema = TransactionsSchema(many=True)
@@ -462,36 +463,46 @@ def report():
         FROM books b 
         LEFT JOIN transactions t ON b.book_id = t.book_id 
         GROUP BY b.book_id 
-        ORDER BY number_of_members DESC"""
+        ORDER BY number_of_members DESC
+        LIMIT 7"""
     ).fetchall()
+
     query1 = db.engine.execute(
-        """SELECT t.book_id, b.book_name,COUNT(t.transaction_type = "issue") AS popularity 
-        FROM transactions t 
-        INNER JOIN books b ON t.book_id = b.book_id 
-        GROUP BY b.book_id 
-        ORDER BY popularity DESC"""
+        """SELECT b.book_id, b.book_name, b.stocks_left, (b.stocks_left+b.issued) AS total 
+        FROM books b ORDER BY b.stocks_left DESC LIMIT 6"""
     ).fetchall()
 
     query3 = db.engine.execute(
-        "SELECT * FROM members ORDER BY total_paid DESC"
+        "SELECT * FROM members ORDER BY total_paid DESC LIMIT 5"
     ).fetchall()
 
-    bookRankingDetails = []
-    for row_number, row in enumerate(query2):
-        bookRankingDetails.append({})
-        for column_number, value in enumerate(row):
-            bookRankingDetails[row_number][row.keys()[column_number]] = value
+    book_ranking_details = []
+    member_ranking_details = []
+    book_stock_details = []
 
-    memberRankingDetails = []
-    for row_number, row in enumerate(query3):
-        memberRankingDetails.append({})
+    for row_number, row in enumerate(query2):
+        book_ranking_details.append({})
         for column_number, value in enumerate(row):
-            memberRankingDetails[row_number][row.keys()[column_number]] = value
+            book_ranking_details[row_number][row.keys()[column_number]] = value
+
+    
+    for row_number, row in enumerate(query3):
+        member_ranking_details.append({})
+        for column_number, value in enumerate(row):
+            member_ranking_details[row_number][row.keys()[column_number]] = value
+
+    
+    for row_number, row in enumerate(query1):
+        book_stock_details.append({})
+        for column_number, value in enumerate(row):
+            book_stock_details[row_number][row.keys()[column_number]] = value
+
 
     return jsonify(
         {
-            "bookRankingDetails": bookRankingDetails,
-            "memberRankingDetails": memberRankingDetails,
+            "bookRankingDetails": book_ranking_details,
+            "memberRankingDetails": member_ranking_details,
+            "bookStockDetails": book_stock_details
         }
     )
 

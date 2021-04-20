@@ -80,33 +80,33 @@ class TransactionsSchema(SQLAlchemyAutoSchema):
 
 
 # returns true if book is available to be issued
-def getAvailability(book):
-    bookDetail = Books.query.get(book)
-    if bookDetail.stocks_left >= 1:
+def get_availability(book):
+    book_detail = Books.query.get(book)
+    if book_detail.stocks_left >= 1:
         return True
-    elif bookDetail.issued < 1:
+    elif book_detail.issued < 1:
         return False
 
 
 # checks if the member has any book or not
 
 
-def checkAnyBooksInPossession(member):
-    memberDetail = Members.query.get(member)
-    if memberDetail.books_in_possession == 0:
+def check_if_booksin_possession(member):
+    member_detail = Members.query.get(member)
+    if member_detail.books_in_possession == 0:
         return False
-    elif memberDetail.books_in_possession >= 1:
+    elif member_detail.books_in_possession >= 1:
         return True
 
 
 # checks if the outstanding deb to be paid is above 500
 
 
-def checkOutstandingDebtLimitCrossed(member):
-    memberDetail = Members.query.get(member)
-    if memberDetail.outstanding_debt < 500:
+def check_outstanding_debt_limit(member):
+    member_detail = Members.query.get(member)
+    if member_detail.outstanding_debt < 500:
         return False
-    elif memberDetail.outstanding_debt >= 500:
+    elif member_detail.outstanding_debt >= 500:
         return True
 
 
@@ -116,7 +116,14 @@ def exception_handler(func):
             return func(*args, **kwargs)
         except:
             db.session.rollback()
-            return json.dumps({"error": "error"}), 500
+            return (
+                jsonify(
+                    {
+                        "errorMessage": "Database error, changes cannot be accepted. No changes made"
+                    }
+                ),
+                500,
+            )
 
     inner_function.__name__ = func.__name__
     return inner_function
@@ -136,33 +143,38 @@ def books():
     if request.method == "GET":
 
         bookDetails = Books.query.all()
-        bookSchema = BooksSchema(many=True)
-        bookDetails = bookSchema.dump(bookDetails)
+        book_schema = BooksSchema(many=True)
+        bookDetails = book_schema.dump(bookDetails)
         return jsonify({"bookDetails": bookDetails})
 
     if request.method == "POST":
-        frontEndData = request.get_json()
+        frontend_data = request.get_json()
 
-        bookName = frontEndData["bookName"]
-        authorName = frontEndData["authorName"]
-        rentPrice = int(frontEndData["rentPrice"])
-        stocks = int(frontEndData["stocks"])
+        book = frontend_data["bookName"]
+        author = frontend_data["authorName"]
+        rent = int(frontend_data["rentPrice"])
+        stocks = int(frontend_data["stocks"])
 
-        if not bookName or not authorName or not rentPrice or not stocks:
-            return json.dumps({"error": "Some details missing"}), 406
+        if not book or not author or not rent or not stocks:
+            return (
+                jsonify(
+                    {"errorMessage": "Some details missing - fill details properly"}
+                ),
+                406,
+            )
 
         newBook = Books(
-            book_name=bookName,
-            author_name=authorName,
-            rent_price=rentPrice,
+            book_name=book,
+            author_name=author,
+            rent_price=rent,
             stocks_left=stocks,
         )
 
         db.session.add(newBook)
         db.session.commit()
         bookDetails = Books.query.all()
-        bookSchema = BooksSchema(many=True)
-        bookDetails = bookSchema.dump(bookDetails)
+        book_schema = BooksSchema(many=True)
+        bookDetails = book_schema.dump(bookDetails)
         return jsonify({"bookDetails": bookDetails})
 
 
@@ -173,8 +185,8 @@ def delete_book(id):
     Books.query.filter_by(book_id=id).delete()
     db.session.commit()
     bookDetails = Books.query.all()
-    bookSchema = BooksSchema(many=True)
-    bookDetails = bookSchema.dump(bookDetails)
+    book_schema = BooksSchema(many=True)
+    bookDetails = book_schema.dump(bookDetails)
     return jsonify({"bookDetails": bookDetails})
 
 
@@ -186,26 +198,26 @@ def update_book(id):
     try:
         book = Books.query.get_or_404(id)
     except:
-        return json.dumps({"error": "Not found"}), 404
+        return jsonify({"errorMessage": "This book does not exist in database"}), 404
 
     # book = Books.query.get_or_404(id)
 
     if request.method == "GET":
-        bookSchema = BooksSchema()
-        output = bookSchema.dump(book)
+        book_schema = BooksSchema()
+        output = book_schema.dump(book)
         return jsonify({"book": output})
 
     if request.method == "POST":
-        bookDataFrontEnd = request.get_json()
-        book.book_name = bookDataFrontEnd["bookName"]
-        book.author_name = bookDataFrontEnd["authorName"]
-        book.rent_price = int(bookDataFrontEnd["rentPrice"])
-        book.stocks_left = int(bookDataFrontEnd["stocks"])
+        frontend_data = request.get_json()
+        book.book_name = frontend_data["bookName"]
+        book.author_name = frontend_data["authorName"]
+        book.rent_price = int(frontend_data["rentPrice"])
+        book.stocks_left = int(frontend_data["stocks"])
 
         db.session.commit()
         bookDetails = Books.query.all()
-        bookSchema = BooksSchema(many=True)
-        bookDetails = bookSchema.dump(bookDetails)
+        book_schema = BooksSchema(many=True)
+        bookDetails = book_schema.dump(bookDetails)
         return jsonify({"bookDetails": bookDetails})
 
 
@@ -214,8 +226,8 @@ def update_book(id):
 def showBookTransactions(id):
     if request.method == "GET":
         transactions = Transactions.query.filter(Transactions.book_id == id)
-        transactionsSchema = TransactionsSchema(many=True)
-        transactions = transactionsSchema.dump(transactions)
+        transaction_schema = TransactionsSchema(many=True)
+        transactions = transaction_schema.dump(transactions)
         length = 0
 
         return jsonify({"transactions": transactions})
@@ -228,23 +240,28 @@ def members():
     if request.method == "GET":
 
         memberDetails = Members.query.all()
-        membersSchema = MembersScehema(many=True)
-        memberDetails = membersSchema.dump(memberDetails)
+        member_schema = MembersScehema(many=True)
+        memberDetails = member_schema.dump(memberDetails)
         return jsonify({"memberDetails": memberDetails})
 
     if request.method == "POST":
-        newMemberFrontEnd = request.get_json()
-        newMemberName = newMemberFrontEnd["memberName"]
-        if not newMemberName:
-            return json.dumps({"error": "Name not entered properly"}), 406
+        frontend_data = request.get_json()
+        new_member_name = frontend_data["memberName"]
+        if not new_member_name:
+            return (
+                jsonify(
+                    {"errorMessage": "Name not entered properly or was not present"}
+                ),
+                406,
+            )
 
-        newMember = Members(member_name=newMemberName)
+        new_member = Members(member_name=new_member_name)
 
-        db.session.add(newMember)
+        db.session.add(new_member)
         db.session.commit()
         memberDetails = Members.query.all()
-        membersSchema = MembersScehema(many=True)
-        memberDetails = membersSchema.dump(memberDetails)
+        member_schema = MembersScehema(many=True)
+        memberDetails = member_schema.dump(memberDetails)
         return jsonify({"memberDetails": memberDetails})
 
 
@@ -255,18 +272,18 @@ def update_members(id):
     try:
         member = Members.query.get_or_404(id)
     except:
-        return json.dumps({"error": "Not found"}), 404
+        return jsonify({"errorMessage": "No such user found in database"}), 404
 
     if request.method == "POST":
-        memberDataFrontEnd = request.get_json()
-        if not memberDataFrontEnd:
-            return json.dumps({"error": "Name not entered properly"}), 406
-        member.member_name = memberDataFrontEnd["memberName"]
+        frontend_data = request.get_json()
+        if not frontend_data:
+            return jsonify({"errorMessage": "Name not entered properly"}), 406
+        member.member_name = frontend_data["memberName"]
 
         db.session.commit()
         memberDetails = Members.query.all()
-        membersSchema = MembersScehema(many=True)
-        memberDetails = membersSchema.dump(memberDetails)
+        member_schema = MembersScehema(many=True)
+        memberDetails = member_schema.dump(memberDetails)
         return jsonify({"memberDetails": memberDetails})
 
 
@@ -277,25 +294,31 @@ def delete_member(id):
     try:
         member = Members.query.get_or_404(id)
     except:
-        return json.dumps({"error": "Not found"}), 404
+        return jsonify({"errorMessage": "No such user found in database"}), 404
 
     # should not be able to delete if there are any dues to be paid
     if member.outstanding_debt > 0:
-        return jsonify({"status": "outstanding debt remains"})
+        return jsonify({"errorMessage": "Outstanding debt remains, cannot delete"}), 405
     else:
         db.session.delete(member)
         db.session.commit()
 
         memberDetails = Members.query.all()
-        memberSchema = MembersScehema(many=True)
-        memberDetails = memberSchema.dump(memberDetails)
+        member_schema = MembersScehema(many=True)
+        memberDetails = member_schema.dump(memberDetails)
         return jsonify({"memberDetails": memberDetails})
 
 
 @app.route("/api/members/<int:id>/books-in-possession", methods=["GET"])
 def getBooksInPossession(id):
     r = db.engine.execute(
-        'SELECT t.book_id, SUM(CASE WHEN transaction_type = "issue" THEN 1 ELSE 0 END)-SUM(CASE WHEN transaction_type = "return" THEN 1 ELSE 0 END) AS balance,book_name,rent_price FROM transactions t INNER JOIN books b ON t.book_id = b.book_id WHERE member_id={} GROUP BY b.book_id'.format(
+        """SELECT t.book_id, 
+        SUM(CASE WHEN transaction_type = "issue" THEN 1 ELSE 0 END)-
+        SUM(CASE WHEN transaction_type = "return" THEN 1 ELSE 0 END) AS balance,
+        book_name,rent_price FROM transactions t 
+        INNER JOIN books b ON t.book_id = b.book_id 
+        WHERE member_id={} 
+        GROUP BY b.book_id""".format(
             id
         )
     ).fetchall()
@@ -316,16 +339,16 @@ def transactions():
     if request.method == "GET":
 
         books = Books.query.all()
-        booksSchema = BooksSchema(many=True)
-        books = booksSchema.dump(books)
+        book_schema = BooksSchema(many=True)
+        books = book_schema.dump(books)
 
         members = Members.query.all()
-        membersSchema = MembersScehema(many=True)
-        members = membersSchema.dump(members)
+        member_schema = MembersScehema(many=True)
+        members = member_schema.dump(members)
 
         transactions = Transactions.query.all()
-        transactionsSchema = TransactionsSchema(many=True)
-        transactions = transactionsSchema.dump(transactions)
+        transaction_schema = TransactionsSchema(many=True)
+        transactions = transaction_schema.dump(transactions)
 
         return jsonify(
             {"transactions": transactions, "members": members, "books": books}
@@ -341,45 +364,45 @@ def issueBook():
     member_id = int(details["member"])
     transaction_type = "issue"
 
-    if getAvailability(book_id) and not checkOutstandingDebtLimitCrossed(member_id):
+    if get_availability(book_id) and not check_outstanding_debt_limit(member_id):
         member = Members.query.get_or_404(member_id)
         book = Books.query.get_or_404(book_id)
 
         if member.outstanding_debt + book.rent_price >= 500:
             return (
-                json.dumps(
+                jsonify(
                     {
-                        "error": "The user cannot be issued anymore books as the outstanding debt limit is crossed"
+                        "errorMessage": "The user cannot be issued anymore books as the outstanding debt limit is crossed"
                     }
                 ),
-                400,
+                405,
             )
 
         book.stocks_left = book.stocks_left - 1
         book.issued = book.issued + 1
         member.outstanding_debt = member.outstanding_debt + book.rent_price
         member.books_in_possession = member.books_in_possession + 1
-        newTransaction = Transactions(
+        new_transaction = Transactions(
             book_id=book_id,
             member_id=member_id,
             transaction_type=transaction_type,
         )
 
-        db.session.add(newTransaction)
+        db.session.add(new_transaction)
         db.session.commit()
         return jsonify({"message": "database changed"})
 
-    elif not getAvailability(book_id):
-        return json.dumps({"error": "Book not available"}), 400
+    elif not get_availability(book_id):
+        return jsonify({"errorMessage": "Book not available"}), 405
 
-    elif checkOutstandingDebtLimitCrossed(member_id):
+    elif check_outstanding_debt_limit(member_id):
         return (
-            json.dumps(
+            jsonify(
                 {
-                    "error": "The user cannot be issued anymore books as the outstanding debt limit is crossed"
+                    "errorMessage": "The user cannot be issued anymore books as the outstanding debt limit is crossed"
                 }
             ),
-            400,
+            405,
         )
 
 
@@ -393,7 +416,7 @@ def returnBook():
     transaction_type = "return"
 
     # if the member has books_in_possession more than 0
-    if checkAnyBooksInPossession(member_id):
+    if check_if_booksin_possession(member_id):
         # return the book
         member = Members.query.get_or_404(member_id)
         book = Books.query.get_or_404(book_id)
@@ -404,29 +427,32 @@ def returnBook():
         member.total_paid = member.total_paid + payment
         member.books_in_possession = member.books_in_possession - 1
 
-        newTransaction = Transactions(
+        new_transaction = Transactions(
             book_id=book_id, member_id=member_id, transaction_type=transaction_type
         )
 
-        db.session.add(newTransaction)
+        db.session.add(new_transaction)
         db.session.commit()
         return jsonify({"message": "database changed"})
 
     # if the member has books_in_possesion as 0
-    if not checkAnyBooksInPossession(member_id):
+    if not check_if_booksin_possession(member_id):
         # do not retyrn any book
-        return jsonify(
-            {
-                "message": "This member currently does not have any book in possession to be able to return"
-            }
+        return (
+            jsonify(
+                {
+                    "errorMessage": "This member currently does not have any book in possession to be able to return"
+                }
+            ),
+            406,
         )
 
 
 @app.route("/api/report", methods=["GET"])
 def report():
     transactions = Transactions.query.all()
-    transactionsSchema = TransactionsSchema(many=True)
-    transactions = transactionsSchema.dump(transactions)
+    transaction_schema = TransactionsSchema(many=True)
+    transactions = transaction_schema.dump(transactions)
 
     query2 = db.engine.execute(
         """SELECT b.book_id, 
